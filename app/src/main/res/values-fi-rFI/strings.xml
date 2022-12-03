@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OtaWilma</string>
+    <string name="username">Käyttäjätunnus</string>
+    <string name="login">Kirjaudu sisään</string>
+    <string name="password">Salasana</string>
+    <string name="checkCredentials">Tarkista käyttäjätunnus ja salasana</string>
+    <string name="checkEmptyCredentials">Käyttäjätunnus tai salasana ei voi olla tyhjä eihän?</string>
+</resources>
