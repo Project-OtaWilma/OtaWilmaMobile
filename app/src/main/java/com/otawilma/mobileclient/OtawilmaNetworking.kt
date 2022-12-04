@@ -24,6 +24,8 @@ interface OtawilmaNetworking {
 
     // Passes the userName and password as a request and expects back a success and a token
     suspend fun login (userName:String, password:String):Pair<Boolean,String>{
+
+        // Create a JSON object for the user
         val user=JSONObject()
         user.put("username",userName)
         user.put("password",password)

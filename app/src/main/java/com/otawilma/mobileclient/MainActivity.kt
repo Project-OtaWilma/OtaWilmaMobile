@@ -1,80 +1,31 @@
 package com.otawilma.mobileclient
 
-import android.os.Bundle
-import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import com.otawilma.mobileclient.fragments.FragmentHomePage
+import com.otawilma.mobileclient.fragments.FragmentSchedule
 
-class MainActivity : AppCompatActivity(), OtawilmaNetworking {
-
-    private val scopeIO = CoroutineScope(Dispatchers.IO)
-
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        //TODO change later:
-        val loggedIn = false
+        val navHostFragment=supportFragmentManager.findFragmentById(R.id.navHostFragmentMain)
+        val navController= navHostFragment!!.findNavController()
+        val toolbar = findViewById<Toolbar>(R.id.toolbarMain)
+        setSupportActionBar(toolbar)
 
-        //guard for logging in
-        if (loggedIn) goToMain()
-
-        //load the login screen
-        setContentView(R.layout.activity_login)
-        val buttonLogin = findViewById<Button>(R.id.buttonLoginLogin)
-        val userNameField = findViewById<EditText>(R.id.editTextTextLoginUsername)
-        val passwordField = findViewById<EditText>(R.id.editTextLoginPassword)
-
-        buttonLogin.setOnClickListener{
-
-            //get the login credentials
-            val userName = userNameField.text.toString()
-            val password = passwordField.text.toString()
-
-            //attempt to login
-            if (userName!=""&&password!=""){
-
-                 scopeIO.launch {
-
-                     val result = login(userName,password)
-
-                    // first = did it succeed?
-                    // second = token
-                    if (result.first){
-                        val token = result.second
-                        Log.d("Networking","token is: $token")
-                        tokenGlobal=token
-                        goToMain()
-                    }else{
-                        runOnUiThread {
-                            Toast.makeText(this@MainActivity, R.string.checkCredentials, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-
-
-            }
-
-            //if one the field are empty
-            else Toast.makeText(
-                this,
-                R.string.checkEmptyCredentials,
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        scopeIO.cancel()
-    }
-
-    private fun goToMain(){
-
+        val drawer = findViewById<DrawerLayout>(R.id.drawerLayoutMain)
+        val toggle = ActionBarDrawerToggle(this,drawer,toolbar,0,0)
+        drawer.addDrawerListener(toggle)
+        toggle.syncState()
     }
 }
