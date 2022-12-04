@@ -1,4 +1,7 @@
 package com.otawilma.mobileclient
 
-//TODO url
-const val OTAWILMA_URL = ""
+import okhttp3.OkHttpClient
+
+const val OTAWILMA_API_URL = "https://beta.wilma-api.tuukk.dev/api/"
+val client = OkHttpClient()
+lateinit var tokenGlobal : String
