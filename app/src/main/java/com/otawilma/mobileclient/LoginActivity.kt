@@ -3,10 +3,13 @@ package com.otawilma.mobileclient
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -19,6 +22,7 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Login logic
         //TODO change later:
         val loggedIn = false
 
@@ -68,6 +72,11 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
                 Toast.LENGTH_SHORT
             ).show()
         }
+
+        // Toolbar
+
+        val toolbar = findViewById<Toolbar>(R.id.toolbarLogin)
+        setSupportActionBar(toolbar)
     }
 
     override fun onDestroy() {
@@ -78,5 +87,22 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
 
     private fun goToMain(){
         startActivity(Intent(this,MainActivity::class.java))
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_login_settings,menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId){
+            R.id.action_preferences->{
+
+            }
+            R.id.action_info->{
+                // TODO info screen
+            }
+        }
+        return true
     }
 }

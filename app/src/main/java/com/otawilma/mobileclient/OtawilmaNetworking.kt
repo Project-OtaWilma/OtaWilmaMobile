@@ -1,12 +1,18 @@
 package com.otawilma.mobileclient
 
+import android.util.Log
 import com.google.gson.Gson
+import com.google.gson.internal.LinkedTreeMap
+import com.otawilma.mobileclient.classes.Lesson
+import com.otawilma.mobileclient.parsesrs.LessonParser
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
+import java.time.LocalDate
 
-interface OtawilmaNetworking {
+interface OtawilmaNetworking:LessonParser {
 
     // KATA-funktiot:
 
@@ -16,7 +22,7 @@ interface OtawilmaNetworking {
     }
 
     // Returns if Otawilma can reach the wilma-server
-    suspend fun pingwilma():Boolean{
+    suspend fun pingWilma():Boolean{
         return false
     }
 
@@ -31,7 +37,7 @@ interface OtawilmaNetworking {
         user.put("password",password)
 
         val mediaType = "application/json; charset=utf-8".toMediaType()
-        val requestBody:RequestBody=RequestBody.create(mediaType,user.toString())
+        val requestBody:RequestBody= user.toString().toRequestBody(mediaType)
         val request = Request.Builder().url("$OTAWILMA_API_URL/login").post(requestBody).build()
 
         client.newCall(request).execute().use {
@@ -44,5 +50,42 @@ interface OtawilmaNetworking {
         }
 
 
+    }
+
+    // Return the schedule for a week in the given date
+    suspend fun getScheduleOfAWeek(date:LocalDate): Pair<Boolean,List<Lesson>>{
+        val dateString = "${date.month}-${date.dayOfMonth}-${date.year}"
+        val mediaType = "application/json; charset=utf-8".toMediaType()
+        val request = Request.Builder().url("$OTAWILMA_API_URL/schedule/week/$dateString").header("token",
+            tokenGlobal).build()
+
+        client.newCall(request).execute().use {
+            val body = it.body ?: return Pair(false, listOf())
+            val bodyString = body.string()
+            Log.d("Networking",bodyString)
+
+
+            /* The keys are the days and the body look as follows:
+
+             "2022-12-04": {
+            "day": { // contains the informatiom about the specific day
+                "date": 0, // index of the day. Sunday is '0' and Saturday '6'.
+                "caption": "Su 4.12", // Caption of the day in [Ww dd.mm] format
+                "full": "Sunnuntai 2022-12-04" // Full caption of the day [] [Ww yyyy-mm-dd] format
+            },
+            "lessons": [], // List of lessons during this day
+            "exams": [] // LIst of exams marked for this day
+        },
+
+             */
+            val dayListJson =
+                Gson().fromJson<Map<String,LinkedTreeMap<String,Any>>>(bodyString, Map::class.java)["days"]?.let { it1 ->
+                    JSONObject(
+                        it1
+                    )
+                }
+            val lessonList = parseSlotToLesson(dayListJson)
+            return Pair(true,lessonList)
+        }
     }
 }
