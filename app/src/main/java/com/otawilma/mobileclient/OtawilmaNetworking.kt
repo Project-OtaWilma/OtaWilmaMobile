@@ -3,7 +3,7 @@ package com.otawilma.mobileclient
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
-import com.otawilma.mobileclient.classes.Lesson
+import com.otawilma.mobileclient.dataClasses.Lesson
 import com.otawilma.mobileclient.parsesrs.LessonParser
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
@@ -60,6 +60,9 @@ interface OtawilmaNetworking:LessonParser {
             tokenGlobal).build()
 
         client.newCall(request).execute().use {
+            if (!it.isSuccessful){
+                return Pair(false, listOf())
+            }
             val body = it.body ?: return Pair(false, listOf())
             val bodyString = body.string()
             Log.d("Networking",bodyString)

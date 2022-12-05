@@ -1,6 +1,6 @@
 package com.otawilma.mobileclient
 
-import com.otawilma.mobileclient.classes.Lesson
+import com.otawilma.mobileclient.dataClasses.Lesson
 
 class LessonRepository {
 

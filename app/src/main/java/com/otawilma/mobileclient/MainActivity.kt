@@ -1,17 +1,14 @@
 package com.otawilma.mobileclient
 
-import android.app.Activity
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
-import android.view.View
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import com.otawilma.mobileclient.fragments.FragmentHomePage
-import com.otawilma.mobileclient.fragments.FragmentSchedule
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,5 +24,22 @@ class MainActivity : AppCompatActivity() {
         val toggle = ActionBarDrawerToggle(this,drawer,toolbar,0,0)
         drawer.addDrawerListener(toggle)
         toggle.syncState()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_login_settings,menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId){
+            R.id.action_preferences->{
+                startActivity(Intent(this,PreferencesActivity::class.java))
+            }
+            R.id.action_info->{
+                // TODO info screen
+            }
+        }
+        return true
     }
 }

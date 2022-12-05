@@ -1,4 +1,4 @@
-package com.otawilma.mobileclient.classes
+package com.otawilma.mobileclient.dataClasses
 
 data class Teacher(
     val id: Int,

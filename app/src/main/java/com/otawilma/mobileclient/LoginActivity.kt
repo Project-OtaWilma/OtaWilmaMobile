@@ -21,13 +21,17 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        sharedPreferences = PreferenceStorage(this)
 
         // Login logic
         //TODO change later:
-        val loggedIn = false
+        val loggedIn = sharedPreferences.autoLogin
 
         //guard for logging in
-        if (loggedIn) goToMain()
+        if (loggedIn){
+            tokenGlobal = ""
+            goToMain()
+        }
 
         //load the login screen
         setContentView(R.layout.activity_login)
@@ -81,7 +85,7 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
 
     override fun onDestroy() {
         super.onDestroy()
-        //to confirm that we don't leak memory
+        // To confirm that we don't leak memory
         scopeIO.cancel()
     }
 
@@ -97,7 +101,7 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId){
             R.id.action_preferences->{
-
+                startActivity(Intent(this,PreferencesActivity::class.java))
             }
             R.id.action_info->{
                 // TODO info screen

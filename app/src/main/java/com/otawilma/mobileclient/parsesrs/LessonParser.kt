@@ -1,9 +1,9 @@
 package com.otawilma.mobileclient.parsesrs
 
 import android.util.Log
-import com.otawilma.mobileclient.classes.ClassRoom
-import com.otawilma.mobileclient.classes.Lesson
-import com.otawilma.mobileclient.classes.Teacher
+import com.otawilma.mobileclient.dataClasses.ClassRoom
+import com.otawilma.mobileclient.dataClasses.Lesson
+import com.otawilma.mobileclient.dataClasses.Teacher
 import org.json.JSONArray
 import org.json.JSONObject
 import java.time.LocalDate
@@ -75,7 +75,8 @@ interface LessonParser {
                         val classRoomCaption = classRoom["caption"] as String
                         classRoomMutableList.add(ClassRoom(classRoomId,classRoomCaption,classRoomName))
                     }
-                    lessonMutableList.add(Lesson(
+                    lessonMutableList.add(
+                        Lesson(
                         courseCode,
                         courseName,
                         startTime,
@@ -84,7 +85,8 @@ interface LessonParser {
                         teacherMutableList,
                         date
 
-                    ))
+                    )
+                    )
 
                 }
 

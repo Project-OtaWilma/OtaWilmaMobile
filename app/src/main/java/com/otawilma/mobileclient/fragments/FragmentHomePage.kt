@@ -18,11 +18,13 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
 
         CoroutineScope(Dispatchers.IO).launch {
             val scheduleResult = getScheduleOfAWeek(LocalDate.now())
-            if (scheduleResult.first){
-                val lessonList = scheduleResult.second
-                Log.d("FragmentHomePage", "LessonList is: $lessonList")
-            } else{
-                Toast.makeText(activity?.applicationContext ,"Failed to load schedule for some reason", Toast.LENGTH_LONG)
+            CoroutineScope(Dispatchers.Main).launch {
+                if (scheduleResult.first) {
+                    val lessonList = scheduleResult.second
+                    Log.d("FragmentHomePage", "LessonList is: $lessonList")
+                } else {
+                    Toast.makeText(activity?.applicationContext, "Failed to load schedule for some reason", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.otawilma.mobileclient.classes
+package com.otawilma.mobileclient.dataClasses
 
 import java.time.LocalDate
 import java.time.LocalTime
