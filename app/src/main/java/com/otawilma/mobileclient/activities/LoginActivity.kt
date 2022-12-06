@@ -56,6 +56,7 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
                         CoroutineScope(Dispatchers.Main).launch {
                             goToMain()
                         }
+                        return@launch
                     }
                 }
 
@@ -69,8 +70,11 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
                             goToMain()
                         }
                     } else{
-                        Toast.makeText(this@LoginActivity,"Auto login unsuccessful", Toast.LENGTH_LONG).show()
-                        progressBarLoginStatus.visibility = View.INVISIBLE
+                        runOnUiThread {
+                            Toast.makeText(this@LoginActivity,"Auto login unsuccessful", Toast.LENGTH_LONG).show()
+                            progressBarLoginStatus.visibility = View.INVISIBLE
+                        }
+
                     }
                 }
             }

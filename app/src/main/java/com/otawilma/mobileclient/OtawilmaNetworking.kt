@@ -17,7 +17,7 @@ interface OtawilmaNetworking:LessonParser {
 
     // Returns if the Otawilma-server can be reached
     suspend fun testToken(token : String) : Boolean{
-        val request = Request.Builder().url("$OTAWILMA_API_URL/authenticate").header("token",token).build()
+        val request = Request.Builder().url("$OTAWILMA_API_URL/authenticate").header("token",token).post("".toRequestBody()).build()
         client.newCall(request).execute().use {
             return it.isSuccessful
         }
