@@ -7,23 +7,37 @@ import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.navigation.NavigationView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OtawilmaNetworking, NavigationView.OnNavigationItemSelectedListener {
+
+    private lateinit var drawer : DrawerLayout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val navHostFragment=supportFragmentManager.findFragmentById(R.id.navHostFragmentMain)
         val navController= navHostFragment!!.findNavController()
+        val navView = findViewById<NavigationView>(R.id.navViewMain)
         val toolbar = findViewById<Toolbar>(R.id.toolbarMain)
         setSupportActionBar(toolbar)
 
-        val drawer = findViewById<DrawerLayout>(R.id.drawerLayoutMain)
+        drawer = findViewById<DrawerLayout>(R.id.drawerLayoutMain)
         val toggle = ActionBarDrawerToggle(this,drawer,toolbar,0,0)
+
         drawer.addDrawerListener(toggle)
         toggle.syncState()
+
+        // I debugged this for an hour ty very much
+        navView.bringToFront()
+
+        navView.setNavigationItemSelectedListener(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -40,6 +54,20 @@ class MainActivity : AppCompatActivity() {
                 // TODO info screen
             }
         }
+        return true
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.menuMainLogout ->{
+                CoroutineScope(Dispatchers.IO).launch {
+                       logout(tokenGlobal)
+                }
+                startActivity(Intent(this@MainActivity, LoginActivity::class.java).putExtra("loggedOut", true))
+            }
+        }
+
+        drawer.closeDrawer(GravityCompat.START)
         return true
     }
 }

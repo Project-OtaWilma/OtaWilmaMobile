@@ -19,10 +19,13 @@ import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
 
+    private lateinit var progressBarLoginStatus : ProgressBar
     private val scopeIO = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val intent = intent
+        val loggedOut = intent.getBooleanExtra("loggedOut",false)
         sharedPreferences = PreferenceStorage(this)
         encryptedPreferenceStorage = EncryptedPreferenceStorage(this)
 
@@ -31,13 +34,13 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
         val buttonLogin = findViewById<Button>(R.id.buttonLoginLogin)
         val userNameField = findViewById<EditText>(R.id.editTextTextLoginUsername)
         val passwordField = findViewById<EditText>(R.id.editTextLoginPassword)
-        val progressBarLoginStatus = findViewById<ProgressBar>(R.id.progressBarLoginStatus)
+        progressBarLoginStatus = findViewById<ProgressBar>(R.id.progressBarLoginStatus)
 
          // Login logic
         val autoLogin = sharedPreferences.autoLogin
 
         //guard for logging in
-        if (autoLogin){
+        if (autoLogin && !loggedOut){
             progressBarLoginStatus.visibility = View.VISIBLE
             val storedToken :String? = encryptedPreferenceStorage.otaWilmaToken
             val storedUserName : String? = encryptedPreferenceStorage.userName
@@ -134,6 +137,7 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
     }
 
     private fun goToMain(){
+        progressBarLoginStatus.visibility = View.INVISIBLE
         startActivity(Intent(this,MainActivity::class.java))
     }
 
