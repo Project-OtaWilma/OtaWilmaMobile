@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -22,15 +24,18 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sharedPreferences = PreferenceStorage(this)
+        encryptedPreferenceStorage = EncryptedPreferenceStorage(this)
 
-        // Login logic
-        //TODO change later:
-        val loggedIn = sharedPreferences.autoLogin
+         // Login logic
+        val autoLogin = sharedPreferences.autoLogin
 
         //guard for logging in
-        if (loggedIn){
-            tokenGlobal = ""
-            goToMain()
+        if (autoLogin){
+            val storedToken :String? = encryptedPreferenceStorage.otaWilmaToken
+            if (storedToken!= null){
+                // Try to login with token
+            }
+            // Try to login with credentials
         }
 
         //load the login screen
@@ -38,6 +43,7 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
         val buttonLogin = findViewById<Button>(R.id.buttonLoginLogin)
         val userNameField = findViewById<EditText>(R.id.editTextTextLoginUsername)
         val passwordField = findViewById<EditText>(R.id.editTextLoginPassword)
+        val progressBarLoginStatus = findViewById<ProgressBar>(R.id.progressBarLoginStatus)
 
         buttonLogin.setOnClickListener{
 
@@ -48,6 +54,7 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
             //attempt to login
             if (userName!=""&&password!=""){
 
+                progressBarLoginStatus.visibility = View.VISIBLE
                  scopeIO.launch {
 
                      val result = login(userName,password)
@@ -58,6 +65,13 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
                         val token = result.second
                         Log.d("Networking","token is: $token")
                         tokenGlobal=token
+
+                        // Store credentials if wanted to
+                        if (autoLogin){
+                            encryptedPreferenceStorage.otaWilmaToken = tokenGlobal
+                            encryptedPreferenceStorage.userName = userName
+                            encryptedPreferenceStorage.passWord = password
+                        }
                         goToMain()
                     }else{
                         runOnUiThread {
@@ -65,7 +79,6 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
                         }
                     }
                 }
-
 
             }
 
