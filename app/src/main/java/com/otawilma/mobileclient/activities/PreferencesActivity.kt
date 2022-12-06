@@ -1,9 +1,12 @@
-package com.otawilma.mobileclient
+package com.otawilma.mobileclient.activities
 
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Switch
 import androidx.appcompat.app.AppCompatActivity
+import com.otawilma.mobileclient.R
+import com.otawilma.mobileclient.encryptedPreferenceStorage
+import com.otawilma.mobileclient.sharedPreferences
 
 class PreferencesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

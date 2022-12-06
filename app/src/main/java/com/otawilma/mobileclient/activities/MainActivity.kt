@@ -1,4 +1,4 @@
-package com.otawilma.mobileclient
+package com.otawilma.mobileclient.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,6 +12,9 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.navigation.NavigationView
+import com.otawilma.mobileclient.OtawilmaNetworking
+import com.otawilma.mobileclient.R
+import com.otawilma.mobileclient.tokenGlobal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,10 +53,10 @@ class MainActivity : AppCompatActivity(), OtawilmaNetworking, NavigationView.OnN
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId){
-            R.id.action_preferences->{
-                startActivity(Intent(this,PreferencesActivity::class.java))
+            R.id.action_preferences ->{
+                startActivity(Intent(this, PreferencesActivity::class.java))
             }
-            R.id.action_info->{
+            R.id.action_info ->{
                 // TODO info screen
             }
         }
@@ -68,7 +71,7 @@ class MainActivity : AppCompatActivity(), OtawilmaNetworking, NavigationView.OnN
                 }
                 startActivity(Intent(this@MainActivity, LoginActivity::class.java).putExtra("loggedOut", true))
             }
-            R.id.menuMainHome-> navController.navigate(R.id.fragmentHomePage)
+            R.id.menuMainHome -> navController.navigate(R.id.fragmentHomePage)
             R.id.menuMainSchedule -> navController.navigate(R.id.fragmentSchedule)
         }
 

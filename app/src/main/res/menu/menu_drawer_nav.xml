@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:shownIn="navigation_view">
 
     <item
         android:id="@+id/menuMainHome"
         android:title="Home" />
 
-    <item
-        android:id="@+id/menuMainSchedule"
-        android:title="Schedule" />
+    <group
+        android:id="@+id/menuGroupSchedules"
+        android:menuCategory="container">
+        <item
+            android:id="@+id/menuMainSchedule"
+            android:title="Schedule"
+            />
+    </group>
+    <group
+        android:menuCategory="container"
+        android:id="@+id/menuGroupLogout">
+        <item
+            android:id="@+id/menuMainLogout"
+            android:title="Logout" />
+    </group>
 
-    <item
-        android:id="@+id/menuMainLogout"
-        android:title="Logout" />
+
 </menu>

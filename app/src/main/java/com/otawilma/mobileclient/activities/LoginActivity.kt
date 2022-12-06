@@ -1,4 +1,4 @@
-package com.otawilma.mobileclient
+package com.otawilma.mobileclient.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,6 +12,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.otawilma.mobileclient.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -96,7 +97,7 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
                     if (result.first){
                         val token = result.second
                         Log.d("Networking","token is: $token")
-                        tokenGlobal=token
+                        tokenGlobal =token
 
                         // Store credentials if wanted to
                         if (autoLogin){
@@ -138,7 +139,7 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
 
     private fun goToMain(){
         progressBarLoginStatus.visibility = View.INVISIBLE
-        startActivity(Intent(this,MainActivity::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -148,10 +149,10 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId){
-            R.id.action_preferences->{
-                startActivity(Intent(this,PreferencesActivity::class.java))
+            R.id.action_preferences ->{
+                startActivity(Intent(this, PreferencesActivity::class.java))
             }
-            R.id.action_info->{
+            R.id.action_info ->{
                 // TODO info screen
             }
         }
