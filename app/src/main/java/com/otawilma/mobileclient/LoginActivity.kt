@@ -26,24 +26,53 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
         sharedPreferences = PreferenceStorage(this)
         encryptedPreferenceStorage = EncryptedPreferenceStorage(this)
 
-         // Login logic
-        val autoLogin = sharedPreferences.autoLogin
-
-        //guard for logging in
-        if (autoLogin){
-            val storedToken :String? = encryptedPreferenceStorage.otaWilmaToken
-            if (storedToken!= null){
-                // Try to login with token
-            }
-            // Try to login with credentials
-        }
-
         //load the login screen
         setContentView(R.layout.activity_login)
         val buttonLogin = findViewById<Button>(R.id.buttonLoginLogin)
         val userNameField = findViewById<EditText>(R.id.editTextTextLoginUsername)
         val passwordField = findViewById<EditText>(R.id.editTextLoginPassword)
         val progressBarLoginStatus = findViewById<ProgressBar>(R.id.progressBarLoginStatus)
+
+         // Login logic
+        val autoLogin = sharedPreferences.autoLogin
+
+        //guard for logging in
+        if (autoLogin){
+            progressBarLoginStatus.visibility = View.VISIBLE
+            val storedToken :String? = encryptedPreferenceStorage.otaWilmaToken
+            val storedUserName : String? = encryptedPreferenceStorage.userName
+            val storedPassword : String? = encryptedPreferenceStorage.passWord
+
+            scopeIO.launch {
+
+                // Try to login with token
+                if (storedToken != null) {
+                    if (testToken(storedToken)) {
+                        tokenGlobal = storedToken
+                        CoroutineScope(Dispatchers.Main).launch {
+                            goToMain()
+                        }
+                    }
+                }
+
+                // Try to login with credentials
+                if (storedUserName != null  && storedPassword!=null) {
+                    val loginStatus = login(storedUserName,storedPassword)
+                    if (loginStatus.first){
+                        tokenGlobal = loginStatus.second
+                        encryptedPreferenceStorage.otaWilmaToken = tokenGlobal
+                        CoroutineScope(Dispatchers.Main).launch {
+                            goToMain()
+                        }
+                    } else{
+                        Toast.makeText(this@LoginActivity,"Auto login unsuccessful", Toast.LENGTH_LONG).show()
+                        progressBarLoginStatus.visibility = View.INVISIBLE
+                    }
+                }
+            }
+        }
+
+
 
         buttonLogin.setOnClickListener{
 
@@ -72,7 +101,9 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
                             encryptedPreferenceStorage.userName = userName
                             encryptedPreferenceStorage.passWord = password
                         }
-                        goToMain()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            goToMain()
+                        }
                     }else{
                         runOnUiThread {
                             Toast.makeText(this@LoginActivity, R.string.checkCredentials, Toast.LENGTH_SHORT).show()

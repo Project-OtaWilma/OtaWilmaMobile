@@ -14,19 +14,23 @@ import java.time.LocalDate
 
 interface OtawilmaNetworking:LessonParser {
 
-    // KATA-funktiot:
 
     // Returns if the Otawilma-server can be reached
-    suspend fun pingOtawilma():Boolean{
-        return false
+    suspend fun testToken(token : String) : Boolean{
+        val request = Request.Builder().url("$OTAWILMA_API_URL/authenticate").build()
+        client.newCall(request).execute().use {
+            if (it.isSuccessful){
+                return true
+            }
+            return false
+        }
+
     }
 
     // Returns if Otawilma can reach the wilma-server
     suspend fun pingWilma():Boolean{
         return false
     }
-
-    //KATA-funktiot loppuvat (onneksi)
 
     // Passes the userName and password as a request and expects back a success and a token
     suspend fun login (userName:String, password:String):Pair<Boolean,String>{
@@ -55,7 +59,6 @@ interface OtawilmaNetworking:LessonParser {
     // Return the schedule for a week in the given date
     suspend fun getScheduleOfAWeek(date:LocalDate): Pair<Boolean,List<Lesson>>{
         val dateString = "${date.month}-${date.dayOfMonth}-${date.year}"
-        val mediaType = "application/json; charset=utf-8".toMediaType()
         val request = Request.Builder().url("$OTAWILMA_API_URL/schedule/week/$dateString").header("token",
             tokenGlobal).build()
 
