@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.CoroutineScope
@@ -18,12 +19,14 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity(), OtawilmaNetworking, NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var drawer : DrawerLayout
+    private lateinit var navController : NavController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val navHostFragment=supportFragmentManager.findFragmentById(R.id.navHostFragmentMain)
-        val navController= navHostFragment!!.findNavController()
+        navController= navHostFragment!!.findNavController()
         val navView = findViewById<NavigationView>(R.id.navViewMain)
         val toolbar = findViewById<Toolbar>(R.id.toolbarMain)
         setSupportActionBar(toolbar)
@@ -65,6 +68,8 @@ class MainActivity : AppCompatActivity(), OtawilmaNetworking, NavigationView.OnN
                 }
                 startActivity(Intent(this@MainActivity, LoginActivity::class.java).putExtra("loggedOut", true))
             }
+            R.id.menuMainHome-> navController.navigate(R.id.fragmentHomePage)
+            R.id.menuMainSchedule -> navController.navigate(R.id.fragmentSchedule)
         }
 
         drawer.closeDrawer(GravityCompat.START)
