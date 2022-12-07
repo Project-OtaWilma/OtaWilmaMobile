@@ -14,5 +14,5 @@ class PreferenceStorage(private val context: Context) {
 
     var homePageDays
         get() = sharedPreferences.getInt("homePageDays",2)
-        set(value) {sharedPreferences.edit().putInt("homePageDays",value)}
+        set(value) {sharedPreferences.edit().putInt("homePageDays",value).apply()}
 }

@@ -39,7 +39,9 @@ class TimeTableAdapter: RecyclerView.Adapter<TimeTableAdapter.TimeTableViewHolde
 
         holder.lessonCode.text = currentItem.code
         holder.lessonTime.text = "${currentItem.startTime} - ${currentItem.endTime}"
-        holder.lessonClass.text = "placeholder"
+        holder.lessonClass.text = currentItem.classRoom.map { it.caption }.joinToString(separator = " / ") {
+            it
+        }
     }
 
 }

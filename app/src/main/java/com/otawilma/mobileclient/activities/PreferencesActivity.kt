@@ -8,7 +8,6 @@ import android.widget.EditText
 import android.widget.Switch
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
 import com.otawilma.mobileclient.R
 import com.otawilma.mobileclient.encryptedPreferenceStorage
 import com.otawilma.mobileclient.sharedPreferences
@@ -40,16 +39,20 @@ class PreferencesActivity : AppCompatActivity() {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
                 try {
                     sharedPreferences.homePageDays = p0.toString().toInt()
                     Toast.makeText(this@PreferencesActivity,"Added ${sharedPreferences.homePageDays} to sharedPreferences",Toast.LENGTH_SHORT).show()
-                }catch (e:NullPointerException){
-                    Toast.makeText(this@PreferencesActivity, "Not convertable", Toast.LENGTH_SHORT).show()
+                }catch (e: Exception){
+                    when(e){
+                        is NullPointerException, is NumberFormatException -> Toast.makeText(this@PreferencesActivity, "Not convertable", Toast.LENGTH_SHORT).show()
+                    }
+
                 }
             }
-
-            override fun afterTextChanged(p0: Editable?) {}
         })
-
     }
 }
