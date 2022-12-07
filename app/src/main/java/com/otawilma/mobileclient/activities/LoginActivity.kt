@@ -77,6 +77,7 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
 
                     }
                 }
+                progressBarLoginStatus.visibility = View.INVISIBLE
             }
         }
 
