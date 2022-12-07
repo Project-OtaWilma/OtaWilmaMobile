@@ -45,21 +45,15 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val layoutManagerBetter = TestLineaLayoutManager(context)
+        val layoutManagerBetter = LinearLayoutManager(context)
         view.findViewById<RecyclerView>(R.id.recyclerViewHomeSchedule)?.apply {
 
-            // THIS
+            // THIS IS BULLSHIT FUCK YOU DROID
             layoutManager = layoutManagerBetter
             isNestedScrollingEnabled = false
             adapter = timeTableAdapter
 
         }
 
-    }
-}
-
-class TestLineaLayoutManager(context : Context?): LinearLayoutManager(context){
-    override fun isAutoMeasureEnabled(): Boolean {
-        return true
     }
 }

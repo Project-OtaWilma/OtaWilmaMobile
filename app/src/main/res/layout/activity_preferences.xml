@@ -35,4 +35,16 @@
         android:text="Wipe encrypted storage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/switchPreferencesCache" />
+
+    <EditText
+        android:id="@+id/editTextNumberAmoutOfDays"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="Amout of days shown [1,PLZNO]"
+        android:inputType="number"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonWipeEncryptedStorage" />
 </androidx.constraintlayout.widget.ConstraintLayout>

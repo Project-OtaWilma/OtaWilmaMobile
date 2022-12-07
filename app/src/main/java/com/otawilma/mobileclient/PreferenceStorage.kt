@@ -11,4 +11,8 @@ class PreferenceStorage(private val context: Context) {
     var autoLogin
         get() = sharedPreferences.getBoolean("autoLogin", false)
         set(value) {sharedPreferences.edit().putBoolean("autoLogin",value).apply()}
+
+    var homePageDays
+        get() = sharedPreferences.getInt("homePageDays",2)
+        set(value) {sharedPreferences.edit().putInt("homePageDays",value)}
 }
