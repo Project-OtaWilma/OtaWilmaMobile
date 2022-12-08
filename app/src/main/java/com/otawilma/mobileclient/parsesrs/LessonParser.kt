@@ -3,6 +3,7 @@ package com.otawilma.mobileclient.parsesrs
 import android.util.Log
 import com.otawilma.mobileclient.dataClasses.ClassRoom
 import com.otawilma.mobileclient.dataClasses.Lesson
+import com.otawilma.mobileclient.dataClasses.NormalLesson
 import com.otawilma.mobileclient.dataClasses.Teacher
 import org.json.JSONArray
 import org.json.JSONObject
@@ -76,16 +77,15 @@ interface LessonParser {
                         classRoomMutableList.add(ClassRoom(classRoomId,classRoomCaption,classRoomName))
                     }
                     lessonMutableList.add(
-                        Lesson(
-                        courseCode,
-                        courseName,
-                        startTime,
-                        endTime,
-                        classRoomMutableList,
-                        teacherMutableList,
-                        date
-
-                    )
+                        NormalLesson(
+                            startTime,
+                            endTime,
+                            date,
+                            courseCode,
+                            courseName,
+                            classRoomMutableList,
+                            teacherMutableList
+                        )
                     )
 
                 }
