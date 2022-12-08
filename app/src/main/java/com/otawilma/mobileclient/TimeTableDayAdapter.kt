@@ -6,13 +6,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.otawilma.mobileclient.dataClasses.Lesson
+import com.otawilma.mobileclient.dataClasses.ScheduleItem
 import java.time.format.TextStyle
 import java.util.*
 
 
 class TimeTableDayAdapter: RecyclerView.Adapter<TimeTableDayAdapter.TimeTableDayViewHolder>() {
-    private  var items: List<List<Lesson>> = emptyList()
+    private  var items: List<List<ScheduleItem>> = emptyList()
     private  var adapterList: ArrayList<TimeTableAdapter> = ArrayList()
 
     // The view holder class
@@ -21,7 +21,7 @@ class TimeTableDayAdapter: RecyclerView.Adapter<TimeTableDayAdapter.TimeTableDay
         val dateTextView: TextView = itemView.findViewById<TextView>(R.id.textViewHomePageShceduleDay)
     }
 
-    fun submitItems(list: List<List<Lesson>>){
+    fun submitItems(list: List<List<ScheduleItem>>){
         items = list.filter{ it.isNotEmpty() }
         notifyDataSetChanged()
     }

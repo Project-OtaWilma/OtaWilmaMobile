@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.otawilma.mobileclient.OtawilmaNetworking
 import com.otawilma.mobileclient.R
 import com.otawilma.mobileclient.TimeTableDayAdapter
-import com.otawilma.mobileclient.dataClasses.Lesson
+import com.otawilma.mobileclient.dataClasses.ScheduleItem
 import com.otawilma.mobileclient.sharedPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,16 +37,16 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
                     // TODO Write a class for a day and fix this awful shit
 
                     val today = LocalDate.now()
-                    val lessonListByDay = ArrayList<List<Lesson>>()
+                    val scheduleItemListByDay = ArrayList<List<ScheduleItem>>()
 
                     for (i in 0 until sharedPreferences.homePageDays){
                         val dayToTake = today.plusDays(i.toLong())
                         val lessonOfTheDay = lessonList.filter {
                             it.date == dayToTake
                         }
-                        lessonListByDay.add(lessonOfTheDay)
+                        scheduleItemListByDay.add(lessonOfTheDay)
                     }
-                    timeTableDayAdapter.submitItems(lessonListByDay)
+                    timeTableDayAdapter.submitItems(scheduleItemListByDay)
 
                 } else {
                     Toast.makeText(
@@ -77,9 +77,12 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
     class DayRecyclerLinearLayoutManager(context: Context?) : LinearLayoutManager(context){
         override fun checkLayoutParams(lp: RecyclerView.LayoutParams?): Boolean {
 
+
+            /* Useless for now
             if (lp != null) {
-                //lp.width = width/sharedPreferences.homePageDays
+                lp.width = width/sharedPreferences.homePageDays
             }
+             */
 
             return super.checkLayoutParams(lp)
         }

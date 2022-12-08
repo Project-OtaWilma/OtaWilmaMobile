@@ -1,10 +1,10 @@
 package com.otawilma.mobileclient
 
-import com.otawilma.mobileclient.dataClasses.Lesson
+import com.otawilma.mobileclient.dataClasses.ScheduleItem
 
 class LessonRepository {
 
-    val lessons: MutableList<Lesson> = mutableListOf()
+    val scheduleItems: MutableList<ScheduleItem> = mutableListOf()
 
 
 }

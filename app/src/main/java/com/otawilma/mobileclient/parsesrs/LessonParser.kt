@@ -1,20 +1,19 @@
 package com.otawilma.mobileclient.parsesrs
 
 import android.util.Log
-import com.otawilma.mobileclient.dataClasses.ClassRoom
-import com.otawilma.mobileclient.dataClasses.Lesson
-import com.otawilma.mobileclient.dataClasses.NormalLesson
-import com.otawilma.mobileclient.dataClasses.Teacher
+import com.otawilma.mobileclient.JUMP_LESSON_TRESHOLD
+import com.otawilma.mobileclient.dataClasses.*
 import org.json.JSONArray
 import org.json.JSONObject
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 interface LessonParser {
 
-    fun parseSlotToLesson(dayListJson: JSONObject?):List<Lesson>{
-        val lessonMutableList = mutableListOf<Lesson>()
+    fun parseSlotToLesson(dayListJson: JSONObject?):List<ScheduleItem>{
+        val lessonMutableList = mutableListOf<ScheduleItem>()
         if (dayListJson==null) {
             throw Exception("You passed a null object to parseSlotToLesson")
         }
@@ -76,17 +75,37 @@ interface LessonParser {
                         val classRoomCaption = classRoom["caption"] as String
                         classRoomMutableList.add(ClassRoom(classRoomId,classRoomCaption,classRoomName))
                     }
-                    lessonMutableList.add(
-                        NormalLesson(
-                            startTime,
-                            endTime,
-                            date,
-                            courseCode,
-                            courseName,
-                            classRoomMutableList,
-                            teacherMutableList
-                        )
+                    val newLesson = NormalLesson(
+                        startTime,
+                        endTime,
+                        date,
+                        courseCode,
+                        courseName,
+                        classRoomMutableList,
+                        teacherMutableList
                     )
+
+                    if (lessonMutableList.size!=0) {
+                        val lastLesson = lessonMutableList.last()
+
+                        // Add JumpLesson
+                        if (Duration.between(
+                                lastLesson.endTime,
+                                newLesson.startTime
+                            ) >= JUMP_LESSON_TRESHOLD
+                        ) {
+                            lessonMutableList.add(
+                                JumpLesson(
+                                    lastLesson.endTime,
+                                    newLesson.startTime,
+                                    date
+                                )
+                            )
+                        }
+                    }
+                    lessonMutableList.add(newLesson)
+
+
 
                 }
 

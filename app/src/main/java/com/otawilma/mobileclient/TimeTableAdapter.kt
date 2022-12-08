@@ -5,22 +5,47 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.otawilma.mobileclient.dataClasses.Lesson
+import com.otawilma.mobileclient.dataClasses.JumpLesson
 import com.otawilma.mobileclient.dataClasses.NormalLesson
+import com.otawilma.mobileclient.dataClasses.ScheduleItem
 
 
 class TimeTableAdapter: RecyclerView.Adapter<TimeTableAdapter.TimeTableViewHolder>() {
-    private var items = emptyList<Lesson>()
+    private var items = emptyList<ScheduleItem>()
 
     // The view holder class
-    open class TimeTableViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
-        val lessonCode: TextView = itemView.findViewById(R.id.textViewLessonCode)
-        val lessonTime : TextView = itemView.findViewById(R.id.textViewLessonTime)
-        val lessonClass : TextView = itemView.findViewById(R.id.textViewLessonClass)
+    class TimeTableViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
+
+        private fun bindNormalLesson(normalLesson: NormalLesson){
+            val lessonCode: TextView = itemView.findViewById(R.id.textViewLessonCode)
+            val lessonTime : TextView = itemView.findViewById(R.id.textViewLessonTime)
+            val lessonClass : TextView = itemView.findViewById(R.id.textViewLessonClass)
+
+            lessonCode.text = normalLesson.code
+            lessonTime.text = "${normalLesson.startTime} - ${normalLesson.endTime}"
+            lessonClass.text = normalLesson.classRoom.map { it.caption }.joinToString(separator = " / ") {
+                it
+            }
+        }
+
+        private fun bindJumpLesson(jumpLesson: JumpLesson){
+            // no more here
+            val lengthText: TextView = itemView.findViewById(R.id.textViewJumpLessonTime)
+
+            lengthText.text = "${jumpLesson.startTime} - ${jumpLesson.endTime}"
+
+        }
+
+        fun bind (scheduleItem: ScheduleItem){
+            when (scheduleItem){
+                is NormalLesson -> bindNormalLesson(scheduleItem as NormalLesson)
+                is JumpLesson -> bindJumpLesson(scheduleItem as JumpLesson)
+            }
+        }
     }
 
 
-    fun submitItems(list: List<Lesson>){
+    fun submitItems(list: List<ScheduleItem>){
         items = list
         notifyDataSetChanged()
     }
@@ -44,21 +69,20 @@ class TimeTableAdapter: RecyclerView.Adapter<TimeTableAdapter.TimeTableViewHolde
 
     override fun onBindViewHolder(holder: TimeTableViewHolder, position: Int) {
 
-        var currentItem = items[position]
-        if (currentItem::class.java == NormalLesson::class.java){
-            currentItem = currentItem as NormalLesson
-            holder.lessonCode.text = currentItem.code
-            holder.lessonTime.text = "${currentItem.startTime} - ${currentItem.endTime}"
-            holder.lessonClass.text = currentItem.classRoom.map { it.caption }.joinToString(separator = " / ") {
-                it
-            }
-        }
-
-
+        val currentItem = items[position]
+        holder.bind(currentItem)
 
     }
 
-    companion object{
+    override fun getItemViewType(position: Int): Int {
+        return when(items[position]){
+            is NormalLesson -> TYPE_LESSON
+            is JumpLesson -> TYPE_JUMP
+            else -> TYPE_JUMP
+        }
+    }
+
+    companion object {
         private const val TYPE_LESSON = 0
         private const val TYPE_JUMP = 1
     }

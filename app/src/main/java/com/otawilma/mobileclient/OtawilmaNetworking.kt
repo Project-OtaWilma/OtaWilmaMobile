@@ -3,7 +3,7 @@ package com.otawilma.mobileclient
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
-import com.otawilma.mobileclient.dataClasses.Lesson
+import com.otawilma.mobileclient.dataClasses.ScheduleItem
 import com.otawilma.mobileclient.parsesrs.LessonParser
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
@@ -62,7 +62,7 @@ interface OtawilmaNetworking:LessonParser {
     }
 
     // Return the schedule for a week in the given date
-    suspend fun getScheduleOfAWeek(date:LocalDate): Pair<Boolean,List<Lesson>>{
+    suspend fun getScheduleOfAWeek(date:LocalDate): Pair<Boolean,List<ScheduleItem>>{
         val dateString = "${date.month}-${date.dayOfMonth}-${date.year}"
         val request = Request.Builder().url("$OTAWILMA_API_URL/schedule/week/$dateString").header("token",
             tokenGlobal).build()
