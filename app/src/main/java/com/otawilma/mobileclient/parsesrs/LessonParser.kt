@@ -12,15 +12,17 @@ import java.time.format.DateTimeFormatter
 
 interface LessonParser {
 
-    fun parseSlotToLesson(dayListJson: JSONObject?):List<ScheduleItem>{
-        val lessonMutableList = mutableListOf<ScheduleItem>()
+    fun parseSlotToLesson(dayListJson: JSONObject?):List<SchoolDay>{
+
         if (dayListJson==null) {
             throw Exception("You passed a null object to parseSlotToLesson")
         }
         Log.d("Parsing", "Parsing $dayListJson")
 
 
-        /* The keys are the days and the body look as follows:
+        /*
+
+        The keys are the days and the body look as follows:
          "2022-12-04": {
         "day": { // contains the informatiom about the specific day
             "date": 0, // index of the day. Sunday is '0' and Saturday '6'.
@@ -31,12 +33,17 @@ interface LessonParser {
         "exams": [] // LIst of exams marked for this day
         },
 
-         */
+        */
+
+        val schoolDayMutableList : MutableList<SchoolDay> = mutableListOf()
 
         dayListJson.keys().forEach {
 
             // Get the date for later
             val date=LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+            // Initialize the list for lesson for given day
+            val lessonMutableList = mutableListOf<ScheduleItem>()
 
             // Get a list of the active timeSlots for the given date
             val timeSlotJsonArray = (dayListJson[it]as JSONObject)["lessons"] as JSONArray
@@ -78,7 +85,6 @@ interface LessonParser {
                     val newLesson = NormalLesson(
                         startTime,
                         endTime,
-                        date,
                         courseCode,
                         courseName,
                         classRoomMutableList,
@@ -97,8 +103,7 @@ interface LessonParser {
                             lessonMutableList.add(
                                 JumpLesson(
                                     lastLesson.endTime,
-                                    newLesson.startTime,
-                                    date
+                                    newLesson.startTime
                                 )
                             )
                         }
@@ -112,8 +117,9 @@ interface LessonParser {
                 Log.d("Parsing","Parsed lesson $startTime and $endTime")
             }
 
+            schoolDayMutableList.add(SchoolDay(date, lessonMutableList))
         }
 
-        return lessonMutableList.toList()
+        return schoolDayMutableList
         }
 }

@@ -7,12 +7,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.otawilma.mobileclient.dataClasses.ScheduleItem
+import com.otawilma.mobileclient.dataClasses.SchoolDay
 import java.time.format.TextStyle
 import java.util.*
 
 
 class TimeTableDayAdapter: RecyclerView.Adapter<TimeTableDayAdapter.TimeTableDayViewHolder>() {
-    private  var items: List<List<ScheduleItem>> = emptyList()
+    private  var items: List<SchoolDay> = emptyList()
     private  var adapterList: ArrayList<TimeTableAdapter> = ArrayList()
 
     // The view holder class
@@ -21,8 +22,10 @@ class TimeTableDayAdapter: RecyclerView.Adapter<TimeTableDayAdapter.TimeTableDay
         val dateTextView: TextView = itemView.findViewById<TextView>(R.id.textViewHomePageShceduleDay)
     }
 
-    fun submitItems(list: List<List<ScheduleItem>>){
-        items = list.filter{ it.isNotEmpty() }
+    fun submitItems(list: List<SchoolDay>){
+        items = list.filter {
+            it.items != emptyList<ScheduleItem>()
+        }
         notifyDataSetChanged()
     }
 
@@ -42,8 +45,8 @@ class TimeTableDayAdapter: RecyclerView.Adapter<TimeTableDayAdapter.TimeTableDay
 
 
         adapterList.add(TimeTableAdapter())
-        adapterList[position].submitItems(currentItem)
-        val date = currentItem[0].date
+        adapterList[position].submitItems(currentItem.items)
+        val date = currentItem.date
         holder.dateTextView.text = "${date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())} ${date.dayOfMonth}/${date.month.value}"
 
         holder.lessonRecyclerView.apply {

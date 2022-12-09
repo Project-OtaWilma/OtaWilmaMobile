@@ -12,6 +12,7 @@ import com.otawilma.mobileclient.OtawilmaNetworking
 import com.otawilma.mobileclient.R
 import com.otawilma.mobileclient.TimeTableDayAdapter
 import com.otawilma.mobileclient.dataClasses.ScheduleItem
+import com.otawilma.mobileclient.dataClasses.SchoolDay
 import com.otawilma.mobileclient.sharedPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,22 +32,19 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
             val scheduleResult = getScheduleOfAWeek(LocalDate.now())
             CoroutineScope(Dispatchers.Main).launch {
                 if (scheduleResult.first) {
-                    val lessonList = scheduleResult.second
-                    Log.d("FragmentHomePage", "LessonList is: $lessonList")
-
-                    // TODO Write a class for a day and fix this awful shit
+                    val schoolDayList = scheduleResult.second
+                    Log.d("FragmentHomePage", "schoolDayList is: $schoolDayList")
 
                     val today = LocalDate.now()
-                    val scheduleItemListByDay = ArrayList<List<ScheduleItem>>()
+                    val schoolDayMutableList : MutableList<SchoolDay> = mutableListOf()
 
                     for (i in 0 until sharedPreferences.homePageDays){
                         val dayToTake = today.plusDays(i.toLong())
-                        val lessonOfTheDay = lessonList.filter {
-                            it.date == dayToTake
-                        }
-                        scheduleItemListByDay.add(lessonOfTheDay)
+                        schoolDayList.find { it.date == dayToTake }
+                            ?.let { schoolDayMutableList.add(it) }
                     }
-                    timeTableDayAdapter.submitItems(scheduleItemListByDay)
+
+                    timeTableDayAdapter.submitItems(schoolDayList)
 
                 } else {
                     Toast.makeText(
