@@ -73,9 +73,11 @@ class MainActivity : AppCompatActivity(), OtawilmaNetworking, NavigationView.OnN
             }
             R.id.menuMainHome -> navController.navigate(R.id.fragmentHomePage)
             R.id.menuMainSchedule -> navController.navigate(R.id.fragmentSchedule)
+            R.id.menuMainMessages -> navController.navigate(R.id.fragmentMessages)
         }
 
         drawer.closeDrawer(GravityCompat.START)
         return true
     }
+
 }

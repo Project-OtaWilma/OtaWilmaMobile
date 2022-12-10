@@ -3,17 +3,19 @@ package com.otawilma.mobileclient
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
-import com.otawilma.mobileclient.dataClasses.ScheduleItem
+import com.otawilma.mobileclient.dataClasses.Message
 import com.otawilma.mobileclient.dataClasses.SchoolDay
 import com.otawilma.mobileclient.parsesrs.LessonParser
+import com.otawilma.mobileclient.parsesrs.MessageParser
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONArray
 import org.json.JSONObject
 import java.time.LocalDate
 
-interface OtawilmaNetworking:LessonParser {
+interface OtawilmaNetworking : LessonParser, MessageParser {
 
 
     // Returns if the Otawilma-server can be reached
@@ -96,8 +98,35 @@ interface OtawilmaNetworking:LessonParser {
                         it1
                     )
                 }
-            val lessonList = parseSlotToLesson(dayListJson)
-            return Pair(true,lessonList)
+            val schoolDayList = parseSlotToLesson(dayListJson)
+            return Pair(true,schoolDayList)
         }
     }
+
+    // Find all of your new messages and returns them in the message format without bodies
+    //suspend fun getNewMessages(limit: Int) : List<MessageItem>
+
+    // Get messages from the latest to until
+    suspend fun getMessages(until : Int) : Pair<Boolean,List<Message>>{
+        val request = Request.Builder().url("$OTAWILMA_API_URL/messages/inbox?limit=$until").header("token", tokenGlobal).build()
+        client.newCall(request).execute().use {
+
+            // If it fails
+            if (!it.isSuccessful) return Pair(false, emptyList())
+
+            // If the body is empty then you must be very new
+            val body = it.body?.string() ?: return Pair(true, emptyList())
+
+            Log.d("Networking", body)
+
+            return Pair(true, parseMessageList(JSONArray(body)))
+
+        }
+    }
+
+    // Get appointments from the latest to until
+    //suspend fun getAppointments(until: Int) : List<Appointment>
+
+    // Get the message body
+    //suspend fun getMessageBody(messageItem: MessageItem) : MessageItem
 }

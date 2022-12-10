@@ -72,7 +72,7 @@ interface LessonParser {
                         val teacherName = teacher["name"] as String
                         val teacherId= (teacher["id"] as Double).toInt()
                         val teacherCaption = teacher["caption"] as String
-                        teacherMutableList.add(Teacher(teacherId,teacherCaption,teacherName))
+                        teacherMutableList.add(Teacher(teacherName,teacherId,teacherCaption))
                     }
 
                     for (classRoomJSONArrayIndex in 0 until classRoomJSONArray.length()){

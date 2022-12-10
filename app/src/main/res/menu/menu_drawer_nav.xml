@@ -15,6 +15,15 @@
             android:title="Schedule"
             />
     </group>
+
+    <group
+        android:id="@+id/menuGroupMessages"
+        android:menuCategory="container">
+        <item
+            android:id="@+id/menuMainMessages"
+            android:title="Messages"/>
+
+    </group>
     <group
         android:menuCategory="container"
         android:id="@+id/menuGroupLogout">
