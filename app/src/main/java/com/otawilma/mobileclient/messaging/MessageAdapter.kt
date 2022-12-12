@@ -21,7 +21,7 @@ class MessageAdapter : RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() 
             val messageTimestamp = itemView.findViewById<TextView>(R.id.textViewRecyclerviewMessageTimeStamp)
 
             messageSubject.text = messageItem.subject
-            messageSender.text = messageItem.senders.joinToString("")
+            messageSender.text = messageItem.senders.joinToString(separator = " / ") { it.name }
             messageTimestamp.text = messageItem.timestamp.toString()
 
             if (messageItem is Message && messageItem.new){
