@@ -127,6 +127,16 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
     // Get appointments from the latest to until
     //suspend fun getAppointments(until: Int) : List<Appointment>
 
+
     // Get the message body
-    //suspend fun getMessageBody(messageItem: MessageItem) : MessageItem
+    suspend fun getMessageBody(message: Message) : Message? {
+        val request = Request.Builder().url("$OTAWILMA_API_URL/messages/${message.id}").header("token", tokenGlobal).build()
+
+        client.newCall(request).execute().use {
+            if (!it.isSuccessful) return null
+            val body = it.body?.string() ?: return null
+
+            return makeMessageGoToGym(JSONArray(body)[0] as JSONObject, message)
+        }
+    }
 }

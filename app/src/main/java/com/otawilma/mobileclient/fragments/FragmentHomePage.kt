@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.otawilma.mobileclient.OtawilmaNetworking
 import com.otawilma.mobileclient.R
 import com.otawilma.mobileclient.TimeTableDayAdapter
-import com.otawilma.mobileclient.dataClasses.ScheduleItem
 import com.otawilma.mobileclient.dataClasses.SchoolDay
 import com.otawilma.mobileclient.sharedPreferences
 import kotlinx.coroutines.CoroutineScope
@@ -44,7 +43,7 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
                             ?.let { schoolDayMutableList.add(it) }
                     }
 
-                    timeTableDayAdapter.submitItems(schoolDayList)
+                    timeTableDayAdapter.submitItems(schoolDayMutableList)
 
                 } else {
                     Toast.makeText(

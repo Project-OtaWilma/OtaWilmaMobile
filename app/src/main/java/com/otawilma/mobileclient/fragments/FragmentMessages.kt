@@ -2,14 +2,19 @@ package com.otawilma.mobileclient.fragments
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.View
-import android.widget.Toast
+import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.PopupWindow
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.otawilma.mobileclient.OtawilmaNetworking
 import com.otawilma.mobileclient.R
+import com.otawilma.mobileclient.dataClasses.Message
 import com.otawilma.mobileclient.dataClasses.MessageItem
 import com.otawilma.mobileclient.messaging.MessageAdapter
 import com.otawilma.mobileclient.messaging.MessageClickListener
@@ -52,7 +57,36 @@ class FragmentMessages : Fragment(R.layout.fragment_messages), OtawilmaNetworkin
 
     override fun onClick(messageItem: MessageItem) {
         Log.d("Messaging", "Clicked $messageItem")
-        Toast.makeText(activity?.applicationContext, "${messageItem.subject}",Toast.LENGTH_LONG).show()
+        CoroutineScope(Dispatchers.IO).launch {
+            val messageToDisplay = getMessageBody(messageItem as Message)
+
+            if (messageToDisplay != null) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    Log.d("Messaging", "Body of message is: $messageToDisplay")
+
+                    val popUpView = layoutInflater.inflate(R.layout.popup_message, null)
+                    val popupWindow = PopupWindow(
+                        popUpView,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+
+                    val textTitle = popUpView.findViewById<TextView>(R.id.textViewPopupMessageTitle)
+                    val textContent =
+                        popUpView.findViewById<TextView>(R.id.textViewPopupMessageContent)
+                    val buttonDismiss = popUpView.findViewById<ImageButton>(R.id.buttonDismissMessage)
+
+                    textTitle.text = messageToDisplay.subject
+                    textContent.text = messageToDisplay.body
+
+                    popupWindow.showAtLocation(activity?.findViewById(R.id.navHostFragmentMain),Gravity.TOP,0,0)
+
+
+                    buttonDismiss.setOnClickListener { popupWindow.dismiss() }
+
+                }
+            }
+        }
     }
 
 }

@@ -1,6 +1,6 @@
 package com.otawilma.mobileclient.dataClasses
 
-import android.text.Html
+import android.text.Spanned
 import java.time.LocalDateTime
 
 
@@ -9,7 +9,7 @@ abstract class MessageItem (
     open val subject: String,
     open val timestamp: LocalDateTime,
     open val senders : List<Person>,
-    open val body: Html?
+    open val body: Spanned?
     )
 
 data class Message(
@@ -17,7 +17,7 @@ data class Message(
     override val subject: String,
     override val timestamp: LocalDateTime,
     override val senders: List<Person>,
-    override val body: Html?,
+    override var body: Spanned?,
     val recipients : List<Person>?,
     val new : Boolean
 ):MessageItem(id, subject,
@@ -31,7 +31,7 @@ data class Appointment(
     override val subject: String,
     override val timestamp: LocalDateTime,
     override val senders: List<Person>,
-    override val body: Html?,
+    override val body: Spanned?,
     val status : String
 ):MessageItem(
     id,
