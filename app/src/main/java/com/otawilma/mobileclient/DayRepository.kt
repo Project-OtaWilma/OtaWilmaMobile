@@ -7,6 +7,7 @@ class DayRepository: OtawilmaNetworking {
 
     private val scheduleItems: HashMap<LocalDate, SchoolDay> = HashMap()
 
+    // TODO There is a weakness that while the app runs and RAM is on, it wont accept any change to schedule
     suspend fun getScheduleOfADay(day : LocalDate) : SchoolDay {
         if (scheduleItems.containsKey(day)) return scheduleItems[day]!!
 
