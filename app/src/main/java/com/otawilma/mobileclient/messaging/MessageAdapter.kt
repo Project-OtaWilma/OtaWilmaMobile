@@ -9,7 +9,7 @@ import com.otawilma.mobileclient.R
 import com.otawilma.mobileclient.dataClasses.Message
 import com.otawilma.mobileclient.dataClasses.MessageItem
 
-class MessageAdapter : RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
+class MessageAdapter(private val onClickListener : MessageClickListener) : RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
 
     private var items : List<MessageItem> = listOf()
 
@@ -44,8 +44,15 @@ class MessageAdapter : RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() 
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         val currentItem = items[position]
+        holder.itemView.setOnClickListener{
+            onClickListener.onClick(currentItem)
+        }
         holder.bind(currentItem)
     }
 
     override fun getItemCount() = items.size
+}
+
+interface MessageClickListener{
+    fun onClick (messageItem: MessageItem)
 }
