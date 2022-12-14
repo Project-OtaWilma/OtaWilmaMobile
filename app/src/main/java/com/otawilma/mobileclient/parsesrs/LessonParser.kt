@@ -1,7 +1,7 @@
 package com.otawilma.mobileclient.parsesrs
 
 import android.util.Log
-import com.otawilma.mobileclient.JUMP_LESSON_TRESHOLD
+import com.otawilma.mobileclient.JUMP_LESSON_THRESHOLD
 import com.otawilma.mobileclient.dataClasses.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -98,7 +98,7 @@ interface LessonParser {
                         if (Duration.between(
                                 lastLesson.endTime,
                                 newLesson.startTime
-                            ) >= JUMP_LESSON_TRESHOLD
+                            ) >= JUMP_LESSON_THRESHOLD
                         ) {
                             lessonMutableList.add(
                                 JumpLesson(

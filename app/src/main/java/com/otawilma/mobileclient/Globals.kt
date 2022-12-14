@@ -5,8 +5,9 @@ import java.time.Duration
 
 
 const val OTAWILMA_API_URL = "https://beta.wilma-api.tuukk.dev/api"
-val JUMP_LESSON_TRESHOLD = Duration.ofMinutes(30)
+val JUMP_LESSON_THRESHOLD: Duration = Duration.ofMinutes(30)
 val client = OkHttpClient()
 lateinit var tokenGlobal : String
 lateinit var sharedPreferences : PreferenceStorage
 lateinit var encryptedPreferenceStorage: EncryptedPreferenceStorage
+val dayRepository: DayRepository = DayRepository()

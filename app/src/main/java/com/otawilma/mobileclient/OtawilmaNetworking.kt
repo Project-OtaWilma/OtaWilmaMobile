@@ -65,18 +65,18 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
     }
 
     // Return the schedule for a week in the given date
-    suspend fun getScheduleOfAWeek(date:LocalDate): Pair<Boolean,List<SchoolDay>>{
+    suspend fun getScheduleOfAWeek(date:LocalDate): List<SchoolDay>?{
         val dateString = "${date.month}-${date.dayOfMonth}-${date.year}"
         val request = Request.Builder().url("$OTAWILMA_API_URL/schedule/week/$dateString").header("token",
             tokenGlobal).build()
 
         client.newCall(request).execute().use {
-            if (!it.isSuccessful){
-                return Pair(false, listOf())
+            if (!it.isSuccessful) {
+                return null
             }
-            val body = it.body ?: return Pair(false, listOf())
+            val body = it.body ?: return null
             val bodyString = body.string()
-            Log.d("Networking",bodyString)
+            Log.d("Networking", bodyString)
 
 
             /* The keys are the days and the body look as follows:
@@ -93,13 +93,15 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
 
              */
             val dayListJson =
-                Gson().fromJson<Map<String,LinkedTreeMap<String,Any>>>(bodyString, Map::class.java)["days"]?.let { it1 ->
+                Gson().fromJson<Map<String, LinkedTreeMap<String, Any>>>(
+                    bodyString,
+                    Map::class.java
+                )["days"]?.let { it1 ->
                     JSONObject(
                         it1
                     )
                 }
-            val schoolDayList = parseSlotToLesson(dayListJson)
-            return Pair(true,schoolDayList)
+            return parseSlotToLesson(dayListJson)
         }
     }
 
