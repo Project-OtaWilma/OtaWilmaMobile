@@ -10,4 +10,4 @@ val client = OkHttpClient()
 lateinit var tokenGlobal : String
 lateinit var sharedPreferences : PreferenceStorage
 lateinit var encryptedPreferenceStorage: EncryptedPreferenceStorage
-val dayRepository: DayRepository = DayRepository()
+lateinit var dayRepository: DayRepository
