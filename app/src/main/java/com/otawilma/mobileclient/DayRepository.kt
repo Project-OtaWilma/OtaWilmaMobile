@@ -1,9 +1,11 @@
 package com.otawilma.mobileclient
 
+import android.content.Context
 import com.otawilma.mobileclient.dataClasses.SchoolDay
+import com.otawilma.mobileclient.storage.SchoolDayCache
 import java.time.LocalDate
 
-class DayRepository: OtawilmaNetworking {
+class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDayCache{
 
     private val scheduleItems: HashMap<LocalDate, SchoolDay> = HashMap()
 
@@ -12,6 +14,8 @@ class DayRepository: OtawilmaNetworking {
         if (scheduleItems.containsKey(day)) return scheduleItems[day]!!
 
         // TODO local repository
+        val stored = getStoredScheduleOfADay(context, day)
+        if (stored!=null) return stored
 
         val dayList : List<SchoolDay> = getScheduleOfAWeek(day)
             ?: //TODO handle network error
@@ -19,7 +23,10 @@ class DayRepository: OtawilmaNetworking {
 
         dayList.forEach {
             scheduleItems[it.date] = it
+            storeScheduleOfADay(context, it)
         }
+
+
 
         return scheduleItems[day]!!
     }

@@ -29,6 +29,7 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
         val loggedOut = intent.getBooleanExtra("loggedOut",false)
         sharedPreferences = PreferenceStorage(this)
         encryptedPreferenceStorage = EncryptedPreferenceStorage(this)
+        dayRepository = DayRepository(applicationContext)
 
         //load the login screen
         setContentView(R.layout.activity_login)

@@ -102,7 +102,7 @@ interface LessonParser {
                         ) {
                             lessonMutableList.add(
                                 JumpLesson(
-                                    lastLesson.endTime,
+                                    lastLesson.endTime!!,
                                     newLesson.startTime
                                 )
                             )
