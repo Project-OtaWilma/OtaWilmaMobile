@@ -6,32 +6,60 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.otawilma.mobileclient.dataClasses.ScheduleItem
+import com.otawilma.mobileclient.dataClasses.DayItem
 import com.otawilma.mobileclient.dataClasses.SchoolDay
+import com.otawilma.mobileclient.dataClasses.Separator
 import java.time.format.TextStyle
 import java.util.*
 
 
 class TimeTableDayAdapter: RecyclerView.Adapter<TimeTableDayAdapter.TimeTableDayViewHolder>() {
-    private  var items: List<SchoolDay> = emptyList()
-    private  var adapterList: ArrayList<TimeTableAdapter> = ArrayList()
+    private var items: List<DayItem> = emptyList()
 
     // The view holder class
     class TimeTableDayViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
-        val lessonRecyclerView : RecyclerView = itemView.findViewById<RecyclerView>(R.id.recyclerViewHomePageScheduleDay)
-        val dateTextView: TextView = itemView.findViewById<TextView>(R.id.textViewHomePageShceduleDay)
+
+        fun bindSchoolDay(position: Int, item : SchoolDay){
+            val lessonRecyclerView : RecyclerView = itemView.findViewById<RecyclerView>(R.id.recyclerViewHomePageScheduleDay)
+            val dateTextView: TextView = itemView.findViewById<TextView>(R.id.textViewHomePageShceduleDay)
+            val adapterT = TimeTableAdapter()
+            adapterT.submitItems(item.items)
+            val date = item.date
+            dateTextView.text = "${date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())} ${date.dayOfMonth}/${date.month.value}"
+
+            lessonRecyclerView.apply {
+                layoutManager = LinearLayoutManager(context)
+                isNestedScrollingEnabled = false
+                adapter = adapterT
+            }
+        }
+
     }
 
     fun submitItems(list: List<SchoolDay>){
-        items = list.filter {
-            it.items != emptyList<ScheduleItem>()
+
+
+        val itemMutableList = mutableListOf<DayItem>()
+        var last : SchoolDay? = null
+        for (i in list){
+            if (last != null && last.date != i.date.minusDays(1)){
+                itemMutableList.add(Separator())
+            }
+            itemMutableList.add(i)
+            last = i
         }
+        items = itemMutableList
         notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeTableDayViewHolder {
+        val layout = when (viewType){
+            TYPE_DAY -> R.layout.cardview_homepage_schedule_day
+            TYPE_SEPARATOR -> R.layout.schedule_separator
+            else -> R.layout.schedule_separator
+        }
         val itemView = LayoutInflater.from(parent.context).inflate(
-            R.layout.cardview_homepage_schedule_day,
+            layout,
             parent,
             false
         )
@@ -43,17 +71,21 @@ class TimeTableDayAdapter: RecyclerView.Adapter<TimeTableDayAdapter.TimeTableDay
     override fun onBindViewHolder(holder: TimeTableDayViewHolder, position: Int) {
         val currentItem = items[position]
 
+        if (currentItem is SchoolDay) holder.bindSchoolDay(position, currentItem)
 
-        adapterList.add(TimeTableAdapter())
-        adapterList[position].submitItems(currentItem.items)
-        val date = currentItem.date
-        holder.dateTextView.text = "${date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())} ${date.dayOfMonth}/${date.month.value}"
+    }
 
-        holder.lessonRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
-            isNestedScrollingEnabled = false
-            adapter = adapterList[position]
+    override fun getItemViewType(position: Int): Int {
+        return when(items[position]){
+            is SchoolDay -> TYPE_DAY
+            is Separator -> TYPE_SEPARATOR
+            else -> TYPE_SEPARATOR
         }
     }
 
+    companion object {
+        private const val TYPE_DAY = 0
+        private const val TYPE_SEPARATOR = 1
+        var adapterList: ArrayList<TimeTableAdapter> = ArrayList()
+    }
 }

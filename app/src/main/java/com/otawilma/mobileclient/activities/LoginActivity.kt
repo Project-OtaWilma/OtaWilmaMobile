@@ -24,12 +24,11 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
     private val scopeIO = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        // TODO kovin legacya
         super.onCreate(savedInstanceState)
         val intent = intent
         val loggedOut = intent.getBooleanExtra("loggedOut",false)
-        sharedPreferences = PreferenceStorage(this)
-        encryptedPreferenceStorage = EncryptedPreferenceStorage(this)
-        dayRepository = DayRepository(applicationContext)
 
         //load the login screen
         setContentView(R.layout.activity_login)
@@ -64,8 +63,8 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
                 // Try to login with credentials
                 if (storedUserName != null  && storedPassword!=null) {
                     val loginStatus = login(storedUserName,storedPassword)
-                    if (loginStatus.first){
-                        tokenGlobal = loginStatus.second
+                    if (loginStatus != null){
+                        tokenGlobal = loginStatus
                         encryptedPreferenceStorage.otaWilmaToken = tokenGlobal
                         CoroutineScope(Dispatchers.Main).launch {
                             goToMain()
@@ -100,13 +99,12 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
 
                     // first = did it succeed?
                     // second = token
-                    if (result.first){
-                        val token = result.second
-                        Log.d("Networking","token is: $token")
-                        tokenGlobal =token
+                    if (result != null) {
+                        Log.d("Networking", "token is: $result")
+                        tokenGlobal = result
 
                         // Store credentials if wanted to
-                        if (autoLogin){
+                        if (autoLogin) {
                             encryptedPreferenceStorage.otaWilmaToken = tokenGlobal
                             encryptedPreferenceStorage.userName = userName
                             encryptedPreferenceStorage.passWord = password

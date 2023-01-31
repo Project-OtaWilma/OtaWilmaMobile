@@ -3,32 +3,40 @@ package com.otawilma.mobileclient
 import android.content.Context
 import com.otawilma.mobileclient.dataClasses.SchoolDay
 import com.otawilma.mobileclient.storage.SchoolDayCache
+import java.time.Duration
 import java.time.LocalDate
 
 class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDayCache{
 
-    private val scheduleItems: HashMap<LocalDate, SchoolDay> = HashMap()
 
-    // TODO There is a weakness that while the app runs and RAM is on, it wont accept any change to schedule
-    suspend fun getScheduleOfADay(day : LocalDate) : SchoolDay {
-        if (scheduleItems.containsKey(day)) return scheduleItems[day]!!
+    private val scheduleMem : HashMap<LocalDate, SchoolDay> = hashMapOf()
 
-        // TODO local repository
-        val stored = getStoredScheduleOfADay(context, day)
-        if (stored!=null) return stored
-
-        val dayList : List<SchoolDay> = getScheduleOfAWeek(day)
-            ?: //TODO handle network error
-            throw Exception("Network request returned nothing")
-
-        dayList.forEach {
-            scheduleItems[it.date] = it
-            storeScheduleOfADay(context, it)
-        }
+    private val updateInterval : Duration = Duration.ofSeconds(10)
 
 
+    fun getCached(day : LocalDate) : SchoolDay? {
 
-        return scheduleItems[day]!!
+            if (scheduleMem.containsKey(day)) return (scheduleMem[day]!!)
+
+            val stored = getStoredScheduleOfADay(context, day)
+            if (stored != null) {
+                scheduleMem[day] = stored
+                return (stored)
+            }
+        return null
     }
 
+    suspend fun getFromServer(token: String, day: LocalDate) : SchoolDay? {
+        val week = getScheduleOfAWeek(token, day)
+
+        if (week != null) {
+            for (schoolDay in week){
+                val date = schoolDay.date
+                storeScheduleOfADay(context, schoolDay)
+                scheduleMem[date] = schoolDay
+            }
+            return scheduleMem[day]
+        }
+        return null
+    }
 }

@@ -1,8 +1,13 @@
 package com.otawilma.mobileclient
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
+import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
+import com.otawilma.mobileclient.activities.LoginActivity
 import com.otawilma.mobileclient.dataClasses.Message
 import com.otawilma.mobileclient.dataClasses.SchoolDay
 import com.otawilma.mobileclient.parsesrs.LessonParser
@@ -17,9 +22,34 @@ import java.time.LocalDate
 
 interface OtawilmaNetworking : LessonParser, MessageParser {
 
+    fun handleInvalidToken(context: Context){
+        Toast.makeText(context, "Not possible to get token so please log in:", Toast.LENGTH_SHORT).show()
+        startActivity(context, Intent(context, LoginActivity::class.java),null)
+    }
+
+    suspend fun getToken() : String? {
+
+        // If we have a token, then very good
+        if (tokenGlobal != null) return tokenGlobal!!
+
+        if (testToken(encryptedPreferenceStorage.otaWilmaToken)) return encryptedPreferenceStorage.otaWilmaToken
+
+        // If we can automatically Login, then still good
+        val userName = encryptedPreferenceStorage.userName
+        val pwd = encryptedPreferenceStorage.passWord
+        if (sharedPreferences.autoLogin && userName != null && pwd != null) {
+            Log.d("RequestTracking", "Another Login request")
+            tokenGlobal = login(userName, pwd)
+            encryptedPreferenceStorage.otaWilmaToken = tokenGlobal
+            return tokenGlobal
+        }
+        // If we cant, then shit
+        return null
+    }
 
     // Returns if the Otawilma-server can be reached
-    suspend fun testToken(token : String) : Boolean{
+    suspend fun testToken(token : String?) : Boolean{
+        if (token == null) return false
         val request = Request.Builder().url("$OTAWILMA_API_URL/authenticate").header("token",token).post("".toRequestBody()).build()
         client.newCall(request).execute().use {
             return it.isSuccessful
@@ -33,7 +63,7 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
     }
 
     // Passes the userName and password as a request and expects back a success and a token
-    suspend fun login (userName:String, password:String):Pair<Boolean,String>{
+    suspend fun login (userName:String, password:String) : String?{
 
         // Create a JSON object for the user
         val user=JSONObject()
@@ -47,10 +77,12 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
         client.newCall(request).execute().use {
             //Log.d("Networking",it.body!!.string())
             if (it.isSuccessful) {
-                val token = Gson().fromJson<Map<String,String>>(it.body!!.string(), Map::class.java)["token"]
-                return Pair(true,token!!)
+                return Gson().fromJson<Map<String, String>>(
+                    it.body!!.string(),
+                    Map::class.java
+                )["token"]
             }
-            return Pair(false,"THE FUCK YOU EXPECT HERE TO BE? A FUCKING TOKEN?")
+            return null
         }
 
 
@@ -65,10 +97,10 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
     }
 
     // Return the schedule for a week in the given date
-    suspend fun getScheduleOfAWeek(date:LocalDate): List<SchoolDay>?{
+    suspend fun getScheduleOfAWeek(token : String,date:LocalDate): List<SchoolDay>?{
         val dateString = "${date.month}-${date.dayOfMonth}-${date.year}"
         val request = Request.Builder().url("$OTAWILMA_API_URL/schedule/week/$dateString").header("token",
-            tokenGlobal).build()
+            token).build()
 
         client.newCall(request).execute().use {
             if (!it.isSuccessful) {
@@ -109,8 +141,8 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
     //suspend fun getNewMessages(limit: Int) : List<MessageItem>
 
     // Get messages from the latest to until
-    suspend fun getMessages(until : Int) : Pair<Boolean,List<Message>>{
-        val request = Request.Builder().url("$OTAWILMA_API_URL/messages/inbox?limit=$until").header("token", tokenGlobal).build()
+    suspend fun getMessages(token : String, until : Int) : Pair<Boolean,List<Message>>{
+        val request = Request.Builder().url("$OTAWILMA_API_URL/messages/inbox?limit=$until").header("token", token).build()
         client.newCall(request).execute().use {
 
             // If it fails
@@ -131,8 +163,8 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
 
 
     // Get the message body
-    suspend fun getMessageBody(message: Message) : Message? {
-        val request = Request.Builder().url("$OTAWILMA_API_URL/messages/${message.id}").header("token", tokenGlobal).build()
+    suspend fun getMessageBody(token : String, message: Message) : Message? {
+        val request = Request.Builder().url("$OTAWILMA_API_URL/messages/${message.id}").header("token", token).build()
 
         client.newCall(request).execute().use {
             if (!it.isSuccessful) return null

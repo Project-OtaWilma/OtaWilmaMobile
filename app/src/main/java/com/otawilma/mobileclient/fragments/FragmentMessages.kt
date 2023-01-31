@@ -34,9 +34,13 @@ class FragmentMessages : Fragment(R.layout.fragment_messages), OtawilmaNetworkin
         messageAdapter = MessageAdapter(this@FragmentMessages)
 
         CoroutineScope(Dispatchers.IO).launch {
-            Log.d("Messaging","${getMessages(10)}")
 
-            val messages = getMessages(100).second
+            val token = getToken()
+            if (token == null) {
+                handleInvalidToken(context!!.applicationContext)
+            }
+
+            val messages = getMessages(token!!,100).second
 
             CoroutineScope(Dispatchers.Main).launch {
                 messageAdapter.submitItems(messages)
@@ -58,7 +62,13 @@ class FragmentMessages : Fragment(R.layout.fragment_messages), OtawilmaNetworkin
     override fun onClick(messageItem: MessageItem) {
         Log.d("Messaging", "Clicked $messageItem")
         CoroutineScope(Dispatchers.IO).launch {
-            val messageToDisplay = getMessageBody(messageItem as Message)
+
+            val token = getToken()
+            if (token == null) {
+                handleInvalidToken(context!!.applicationContext)
+            }
+
+            val messageToDisplay = getMessageBody(token!!, messageItem as Message)
 
             if (messageToDisplay != null) {
                 CoroutineScope(Dispatchers.Main).launch {
