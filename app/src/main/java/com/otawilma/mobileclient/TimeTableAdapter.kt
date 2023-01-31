@@ -38,8 +38,8 @@ class TimeTableAdapter: RecyclerView.Adapter<TimeTableAdapter.TimeTableViewHolde
 
         fun bind (scheduleItem: ScheduleItem){
             when (scheduleItem){
-                is NormalLesson -> bindNormalLesson(scheduleItem as NormalLesson)
-                is JumpLesson -> bindJumpLesson(scheduleItem as JumpLesson)
+                is NormalLesson -> bindNormalLesson(scheduleItem)
+                is JumpLesson -> bindJumpLesson(scheduleItem)
             }
         }
     }

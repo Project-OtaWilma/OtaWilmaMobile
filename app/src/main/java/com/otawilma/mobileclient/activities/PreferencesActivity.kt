@@ -20,6 +20,7 @@ class PreferencesActivity : AppCompatActivity() {
         val switchAutoLogin = findViewById<Switch>(R.id.switchPreferencesAutoLogin)
         val buttonWipeEncryptedPreferenceStorage = findViewById<Button>(R.id.buttonWipeEncryptedStorage)
         val editTextHomePageDays = findViewById<EditText>(R.id.editTextNumberAmoutOfDays)
+        val buttonReturn = findViewById<Button>(R.id.buttonPrefReturn)
 
         // TODO implement later
         val switchCache = findViewById<Switch>(R.id.switchPreferencesCache)
@@ -45,14 +46,18 @@ class PreferencesActivity : AppCompatActivity() {
             override fun afterTextChanged(p0: Editable?) {
                 try {
                     sharedPreferences.homePageDays = p0.toString().toInt()
-                    Toast.makeText(this@PreferencesActivity,"Added ${sharedPreferences.homePageDays} to sharedPreferences",Toast.LENGTH_SHORT).show()
                 }catch (e: Exception){
                     when(e){
-                        is NullPointerException, is NumberFormatException -> Toast.makeText(this@PreferencesActivity, "Not convertable", Toast.LENGTH_SHORT).show()
+                        is NullPointerException, is NumberFormatException -> Toast.makeText(this@PreferencesActivity, "Please type in a number", Toast.LENGTH_SHORT).show()
                     }
 
                 }
             }
         })
+
+        buttonReturn.setOnClickListener {
+            finish()
+        }
+
     }
 }

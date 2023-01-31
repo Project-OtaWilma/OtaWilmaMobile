@@ -3,16 +3,11 @@ package com.otawilma.mobileclient
 import android.content.Context
 import com.otawilma.mobileclient.dataClasses.SchoolDay
 import com.otawilma.mobileclient.storage.SchoolDayCache
-import java.time.Duration
 import java.time.LocalDate
 
 class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDayCache{
 
-
     private val scheduleMem : HashMap<LocalDate, SchoolDay> = hashMapOf()
-
-    private val updateInterval : Duration = Duration.ofSeconds(10)
-
 
     fun getCached(day : LocalDate) : SchoolDay? {
 
