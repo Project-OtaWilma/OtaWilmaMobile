@@ -4,6 +4,8 @@ OtawilmaMobile is an android interface for OtaWilma.
 
 This allows for thigs like AN USABLE INTERFACE and notifications
 
+The app is still heavily under development so things such as usability, and combatability are not guaranteed. If a new release does not work you can try completly uninstalling the application and redownloading it.
+
 ## Features:
 
 compared to the normal Wilma app this app can:
