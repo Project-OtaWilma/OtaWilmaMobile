@@ -10,7 +10,7 @@ The app is still heavily under development, so things such as usability, and com
 
 Compared to the normal Wilma app this app can:
 
-- Cache your schedule so that you can see where you should be and when even without an internet connaction or the oh so reliable Wilma-servers
+- Cache your schedule so that you can see where you should be and when even without an internet connection or the oh so reliable Wilma-servers
 
 Compared to the normal Wilma app this app cannot:
 
