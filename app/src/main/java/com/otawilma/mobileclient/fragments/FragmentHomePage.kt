@@ -39,7 +39,7 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
                 var day = LocalDate.now()
 
                 val listCache : MutableList<SchoolDay> = mutableListOf()
-                while (listCache.size < sharedPreferences.homePageDays || day == LocalDate.now().plusDays(100)) {
+                while (listCache.size < sharedPreferences.homePageDays && day <= LocalDate.now().plusDays(20)) {
                     val element = dayRepository.getCached(day)
                     if (element != null && element.items.isNotEmpty()) {
                         listCache.add(element)
@@ -51,10 +51,10 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
                 day = LocalDate.now()
 
                 val listActual : MutableList<SchoolDay> = mutableListOf()
-                while (listActual.size < sharedPreferences.homePageDays || day == LocalDate.now().plusDays(100)) {
-                    val token = getToken()
-                    if (token == null)  handleInvalidToken(context!!.applicationContext)
-                    val element = dayRepository.getFromServer(token!!, day)
+                while (listActual.size < sharedPreferences.homePageDays && day <= LocalDate.now().plusDays(20)) {
+                    val token = getToken() ?: handleInvalidToken(context!!)
+
+                    val element = dayRepository.getFromServer(token, day)
 
                     if (element != null && element.items.isNotEmpty()){
                         listActual.add(element)

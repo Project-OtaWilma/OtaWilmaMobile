@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
-import androidx.core.content.ContextCompat.startActivity
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
 import com.otawilma.mobileclient.activities.LoginActivity
@@ -12,6 +11,10 @@ import com.otawilma.mobileclient.dataClasses.Message
 import com.otawilma.mobileclient.dataClasses.SchoolDay
 import com.otawilma.mobileclient.parsesrs.LessonParser
 import com.otawilma.mobileclient.parsesrs.MessageParser
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -22,9 +25,18 @@ import java.time.LocalDate
 
 interface OtawilmaNetworking : LessonParser, MessageParser {
 
-    fun handleInvalidToken(context: Context){
-        Toast.makeText(context, "Not possible to get token so please log in:", Toast.LENGTH_SHORT).show()
-        startActivity(context, Intent(context, LoginActivity::class.java),null)
+    suspend fun handleInvalidToken(context: Context) : String{
+        CoroutineScope(Dispatchers.Main).launch{
+            Toast.makeText(context, "Not possible to get token so please log in:", Toast.LENGTH_SHORT).show()
+            context.startActivity(Intent(context, LoginActivity::class.java))
+        }
+
+        var token = getToken()
+        while (token == null){
+            delay(10)
+            token = getToken()
+        }
+        return token
     }
 
     suspend fun getToken() : String? {

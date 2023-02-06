@@ -143,7 +143,7 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
 
     private fun goToMain(){
         progressBarLoginStatus.visibility = View.INVISIBLE
-        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
