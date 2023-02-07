@@ -25,7 +25,7 @@ class MessageAdapter(private val onClickListener : MessageClickListener) : Recyc
             messageTimestamp.text = messageItem.timestamp.toString()
 
             if (messageItem is Message && messageItem.new){
-                messageSubject.setTextColor(R.color.purple_500)
+                messageSubject.setTextColor(R.color.darkBlue)
             }
         }
 

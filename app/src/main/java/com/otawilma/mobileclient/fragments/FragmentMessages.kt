@@ -63,12 +63,9 @@ class FragmentMessages : Fragment(R.layout.fragment_messages), OtawilmaNetworkin
         Log.d("Messaging", "Clicked $messageItem")
         CoroutineScope(Dispatchers.IO).launch {
 
-            val token = getToken()
-            if (token == null) {
-                handleInvalidToken(context!!.applicationContext)
-            }
+            val token = getToken() ?: handleInvalidToken(context!!)
 
-            val messageToDisplay = getMessageBody(token!!, messageItem as Message)
+            val messageToDisplay = getMessageBody(token, messageItem as Message)
 
             if (messageToDisplay != null) {
                 CoroutineScope(Dispatchers.Main).launch {
