@@ -31,20 +31,47 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
             context.startActivity(Intent(context, LoginActivity::class.java))
         }
 
-        var token = getToken()
-        while (token == null){
-            delay(10)
-            token = getToken()
+        while (true){
+            try {return getToken()}
+                catch (_: NoStoredTokenException){
+                delay(10)
+            }
         }
-        return token
+
+
     }
 
-    suspend fun getToken() : String? {
+    suspend fun invalidateTokenAndGetNew(context: Context) : String {
+        tokenGlobal = null
+        encryptedPreferenceStorage.otaWilmaToken = null
+        return waitUntilToken(context)
+    }
+
+    suspend fun waitUntilToken(context: Context) : String{
+        while (true){
+            try {return getToken()}
+            catch (e: Exception){
+                when(e){
+                    is NoStoredTokenException -> return handleInvalidToken(context)
+                    is OtaWilmaDownException, is WilmaDownException -> delay(100)
+                    else -> throw e
+                }
+            }
+        }
+    }
+
+    // Returns a token or gets one from the server
+    suspend fun getToken() : String {
 
         // If we have a token, then very good
         if (tokenGlobal != null) return tokenGlobal!!
 
-        if (testToken(encryptedPreferenceStorage.otaWilmaToken)) return encryptedPreferenceStorage.otaWilmaToken
+        // If we have a stored token, then still fairly good
+        val temp = encryptedPreferenceStorage.otaWilmaToken
+        if (temp != null) {
+            tokenGlobal = temp
+            return temp
+        }
 
         // If we can automatically Login, then still good
         val userName = encryptedPreferenceStorage.userName
@@ -53,24 +80,40 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
             Log.d("RequestTracking", "Another Login request")
             tokenGlobal = login(userName, pwd)
             encryptedPreferenceStorage.otaWilmaToken = tokenGlobal
-            return tokenGlobal
+            return tokenGlobal!!
         }
         // If we cant, then shit
-        return null
+        throw NoStoredTokenException("No token exists and one cannot be retried")
     }
 
-    // Returns if the Otawilma-server can be reached
-    suspend fun testToken(token : String?) : Boolean{
+    fun checkCode(code : Int){
+        when (code) {
+            200 -> return
+            404, 500 -> throw OtaWilmaDownException("Otawilma is down")
+            501 -> throw WilmaDownException("Wilma is down")
+            401 -> throw InvalidTokenNetworkException("The token is invalid")
+            else -> throw Exception("Received unexpected code from server code: $code")
+
+        }
+    }
+
+    // Returns if the Otawilma-server can be reached and the token is valid
+    suspend fun testToken(token : String?) : Boolean {
         if (token == null) return false
         val request = Request.Builder().url("$OTAWILMA_API_URL/authenticate").header("token",token).post("".toRequestBody()).build()
         client.newCall(request).execute().use {
-            return it.isSuccessful
+            if (it.isSuccessful){
+                return true
+            } else {
+                Log.d("Networking", "The request was no successful: ${it.message} with the code of ${it.code} ")
+                return false
+            }
         }
 
     }
 
     // Returns if Otawilma can reach the wilma-server
-    suspend fun pingWilma():Boolean{
+    suspend fun pingWilma() : Boolean{
         return false
     }
 
@@ -88,23 +131,20 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
 
         client.newCall(request).execute().use {
             //Log.d("Networking",it.body!!.string())
-            if (it.isSuccessful) {
-                return Gson().fromJson<Map<String, String>>(
-                    it.body!!.string(),
-                    Map::class.java
-                )["token"]
-            }
-            return null
+            checkCode(it.code)
+            return Gson().fromJson<Map<String, String>>(
+                it.body!!.string(),
+                Map::class.java
+            )["token"]
         }
-
-
     }
 
     suspend fun logout (token: String) : Boolean{
         val request = Request.Builder().url("$OTAWILMA_API_URL/logout").header("token",token).build()
 
         client.newCall(request).execute().use {
-            return it.isSuccessful
+            checkCode(it.code)
+            return true
         }
     }
 
@@ -115,9 +155,7 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
             token).build()
 
         client.newCall(request).execute().use {
-            if (!it.isSuccessful) {
-                return null
-            }
+            checkCode(it.code)
             val body = it.body ?: return null
             val bodyString = body.string()
             Log.d("Networking", bodyString)
@@ -153,19 +191,19 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
     //suspend fun getNewMessages(limit: Int) : List<MessageItem>
 
     // Get messages from the latest to until
-    suspend fun getMessages(token : String, until : Int) : Pair<Boolean,List<Message>>{
+    suspend fun getMessages(token : String, until : Int) : List<Message>{
         val request = Request.Builder().url("$OTAWILMA_API_URL/messages/inbox?limit=$until").header("token", token).build()
         client.newCall(request).execute().use {
 
             // If it fails
-            if (!it.isSuccessful) return Pair(false, emptyList())
+            checkCode(it.code)
 
             // If the body is empty then you must be very new
-            val body = it.body?.string() ?: return Pair(true, emptyList())
+            val body = it.body?.string() ?: return emptyList()
 
             Log.d("Networking", body)
 
-            return Pair(true, parseMessageList(JSONArray(body)))
+            return parseMessageList(JSONArray(body))
 
         }
     }
@@ -179,10 +217,9 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
         val request = Request.Builder().url("$OTAWILMA_API_URL/messages/${message.id}").header("token", token).build()
 
         client.newCall(request).execute().use {
-            if (!it.isSuccessful) return null
+            checkCode(it.code)
             val body = it.body?.string() ?: return null
-
-            return makeMessageGoToGym(JSONArray(body)[0] as JSONObject, message)
+            return getMessageBody(JSONArray(body)[0] as JSONObject, message)
         }
     }
 }

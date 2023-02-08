@@ -36,7 +36,7 @@ interface MessageParser : PersonParser {
     }
 
     // Fetch the body for the message
-    fun makeMessageGoToGym(messageJson : JSONObject, message: Message) : Message{
+    fun getMessageBody(messageJson : JSONObject, message: Message) : Message{
 
         val body: Spanned? = Html.fromHtml(getOrNull(messageJson, "content") as String,)
 

@@ -8,13 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.otawilma.mobileclient.*
 import com.otawilma.mobileclient.dataClasses.SchoolDay
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
+import java.net.SocketTimeoutException
 import java.time.LocalDate
 
 class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking {
@@ -22,7 +20,7 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
     private lateinit var timeTableDayAdapter: TimeTableDayAdapter
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private val coroutineScopeMain = CoroutineScope(Dispatchers.Main)
+    private val coroutineScopeMain = CoroutineScope(Dispatchers.Main )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,15 +50,22 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
 
                 val listActual : MutableList<SchoolDay> = mutableListOf()
                 while (listActual.size < sharedPreferences.homePageDays && day <= LocalDate.now().plusDays(20)) {
-                    val token = getToken() ?: handleInvalidToken(context!!)
+                    var token = waitUntilToken(context!!)
 
-                    val element = dayRepository.getFromServer(token, day)
-
-                    if (element != null && element.items.isNotEmpty()){
-                        listActual.add(element)
+                    while (true) {
+                        try {
+                            val element = dayRepository.getFromServer(token, day)
+                            if (element != null && element.items.isNotEmpty()) {
+                                listActual.add(element)
+                            }
+                            day = day.plusDays(1)
+                            break
+                        } catch (e: InvalidTokenNetworkException) {
+                            token = invalidateTokenAndGetNew(context!!)
+                        } catch (e: SocketTimeoutException){
+                            delay(100)
+                        }
                     }
-
-                    day = day.plusDays(1)
                 }
                 emit(listActual)
             }

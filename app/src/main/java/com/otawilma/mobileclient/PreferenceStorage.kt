@@ -3,7 +3,7 @@ package com.otawilma.mobileclient
 import android.content.Context
 
 
-class PreferenceStorage(private val context: Context) {
+class PreferenceStorage(context: Context) {
 
     private val preferenceFileName = "com.otawilma.mobileclient.preferences"
     private val sharedPreferences = context.getSharedPreferences(preferenceFileName, Context.MODE_PRIVATE)
@@ -13,6 +13,6 @@ class PreferenceStorage(private val context: Context) {
         set(value) {sharedPreferences.edit().putBoolean("autoLogin",value).apply()}
 
     var homePageDays
-        get() = sharedPreferences.getInt("homePageDays",2)
+        get() = sharedPreferences.getInt("homePageDays",3)
         set(value) {sharedPreferences.edit().putInt("homePageDays",value).apply()}
 }
