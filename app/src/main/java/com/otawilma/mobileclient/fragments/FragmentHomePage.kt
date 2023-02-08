@@ -20,7 +20,7 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
     private lateinit var timeTableDayAdapter: TimeTableDayAdapter
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private val coroutineScopeMain = CoroutineScope(Dispatchers.Main)
+    private val coroutineScopeMain = CoroutineScope(Dispatchers.Main )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

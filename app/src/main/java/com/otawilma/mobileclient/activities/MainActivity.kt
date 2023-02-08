@@ -12,12 +12,15 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.navigation.NavigationView
+import com.otawilma.mobileclient.InvalidTokenNetworkException
 import com.otawilma.mobileclient.OtawilmaNetworking
 import com.otawilma.mobileclient.R
 import com.otawilma.mobileclient.initAppData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.net.SocketTimeoutException
 
 class MainActivity : AppCompatActivity(), OtawilmaNetworking, NavigationView.OnNavigationItemSelectedListener {
 
@@ -69,7 +72,17 @@ class MainActivity : AppCompatActivity(), OtawilmaNetworking, NavigationView.OnN
         when(item.itemId){
             R.id.menuMainLogout ->{
                 CoroutineScope(Dispatchers.IO).launch {
-                       logout(getToken()!!)
+                    var token = waitUntilToken(applicationContext)
+                    while (true) {
+                        try {
+                            logout(token)
+                            break
+                        } catch (e: InvalidTokenNetworkException) {
+                            token = invalidateTokenAndGetNew(applicationContext)
+                        } catch (e: SocketTimeoutException){
+                            delay(100)
+                        }
+                    }
                 }
                 startActivity(Intent(this@MainActivity, LoginActivity::class.java).putExtra("loggedOut", true))
             }
