@@ -39,12 +39,16 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
         return token
     }
 
-    suspend fun getToken() : String? {
+    suspend fun getToken() : String {
 
         // If we have a token, then very good
         if (tokenGlobal != null) return tokenGlobal!!
 
-        if (testToken(encryptedPreferenceStorage.otaWilmaToken)) return encryptedPreferenceStorage.otaWilmaToken
+        val temp = encryptedPreferenceStorage.otaWilmaToken
+        if (temp != null) {
+            tokenGlobal = temp
+            return temp
+        }
 
         // If we can automatically Login, then still good
         val userName = encryptedPreferenceStorage.userName
@@ -53,13 +57,13 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
             Log.d("RequestTracking", "Another Login request")
             tokenGlobal = login(userName, pwd)
             encryptedPreferenceStorage.otaWilmaToken = tokenGlobal
-            return tokenGlobal
+            return tokenGlobal!!
         }
         // If we cant, then shit
-        return null
+        throw NoStoredTokenException("No token exists and one cannot be retried")
     }
 
-    // Returns if the Otawilma-server can be reached
+    // Returns if the Otawilma-server can be reached and the token is valid
     suspend fun testToken(token : String?) : Boolean{
         if (token == null) return false
         val request = Request.Builder().url("$OTAWILMA_API_URL/authenticate").header("token",token).post("".toRequestBody()).build()
