@@ -24,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 
 class FragmentMessages : Fragment(R.layout.fragment_messages), OtawilmaNetworking, MessageClickListener {
@@ -46,10 +47,12 @@ class FragmentMessages : Fragment(R.layout.fragment_messages), OtawilmaNetworkin
                         messageAdapter.submitItems(messages)
                     }
                     break
-                } catch (e: InvalidTokenNetworkException) {
-                    token = invalidateTokenAndGetNew(context!!)
-                }catch (e: SocketTimeoutException){
-                    delay(100)
+                } catch (e : Exception){
+                    when (e){
+                        is InvalidTokenNetworkException -> token = invalidateTokenAndGetNew(context!!)
+                        is UnknownHostException, is SocketTimeoutException, -> delay(100)
+                        else -> throw e
+                    }
                 }
             }
         }

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.time.LocalDate
 
 class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking {
@@ -60,10 +61,12 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
                             }
                             day = day.plusDays(1)
                             break
-                        } catch (e: InvalidTokenNetworkException) {
-                            token = invalidateTokenAndGetNew(context!!)
-                        } catch (e: SocketTimeoutException){
-                            delay(100)
+                        } catch (e : Exception){
+                            when (e){
+                                is InvalidTokenNetworkException -> token = invalidateTokenAndGetNew(context!!)
+                                is UnknownHostException, is SocketTimeoutException, -> delay(100)
+                                else -> throw e
+                            }
                         }
                     }
                 }
