@@ -1,14 +1,11 @@
 <resources>
     <!-- Base application theme. -->
     <style name="Theme.OtaWilma" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
         <item name="colorPrimary">#003366</item>
         <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
+        <item name="android:colorSecondary">@color/lightBlue</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
         <item name="android:statusBarColor">#003366</item>
-        <!-- Customize your theme here. -->
     </style>
 
     <style name="Theme.OtaWilma.NoActionBar">
