@@ -6,9 +6,15 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.otawilma.mobileclient.*
-import kotlinx.coroutines.*
+import com.otawilma.mobileclient.OtawilmaNetworking
+import com.otawilma.mobileclient.R
+import com.otawilma.mobileclient.TimeTableDayAdapter
+import com.otawilma.mobileclient.dayRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking {
 

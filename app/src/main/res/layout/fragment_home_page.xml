@@ -3,7 +3,6 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nestedScrollViewHome"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fillViewport="true">
@@ -49,7 +48,6 @@
             app:layout_constraintTop_toBottomOf="@+id/recyclerViewHomeSchedule" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewHomeMessages"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
