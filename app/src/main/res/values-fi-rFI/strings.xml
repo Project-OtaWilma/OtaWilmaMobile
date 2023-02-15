@@ -6,5 +6,8 @@
     <string name="password">Salasana</string>
     <string name="checkCredentials">Tarkista käyttäjätunnus ja salasana</string>
     <string name="checkEmptyCredentials">Käyttäjätunnus tai salasana ei voi olla tyhjä eihän?</string>
-    <string name="new_messages">New messages</string>
+    <string name="new_messages">Uudet viestit</string>
+    <string name="schedule">Lukujärjestys</string>
+    <string name="title_activity_preferences">AsetusAktiviteetti</string>
+    <string name="go_back">Takaisin</string>
 </resources>
