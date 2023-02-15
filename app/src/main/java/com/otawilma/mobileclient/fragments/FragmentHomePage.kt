@@ -30,7 +30,6 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
 
 
         coroutineScope.launch {
-
             val schoolDayFlow = dayRepository.schoolDayFlow
             schoolDayFlow.collect {
                 coroutineScopeMain.launch {

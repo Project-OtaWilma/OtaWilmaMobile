@@ -46,7 +46,9 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
     suspend fun handleInvalidToken(context: Context) : String{
         CoroutineScope(Dispatchers.Main).launch{
             Toast.makeText(context, "Not possible to get token so please log in:", Toast.LENGTH_SHORT).show()
-            context.startActivity(Intent(context, LoginActivity::class.java))
+            val intent = Intent(context, LoginActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
         }
 
         while (true){
