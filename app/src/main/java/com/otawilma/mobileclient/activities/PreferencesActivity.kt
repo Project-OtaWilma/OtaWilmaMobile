@@ -8,9 +8,7 @@ import android.widget.EditText
 import android.widget.Switch
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.otawilma.mobileclient.R
-import com.otawilma.mobileclient.encryptedPreferenceStorage
-import com.otawilma.mobileclient.sharedPreferences
+import com.otawilma.mobileclient.*
 
 class PreferencesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +22,7 @@ class PreferencesActivity : AppCompatActivity() {
 
         // TODO implement later
         val switchCache = findViewById<Switch>(R.id.switchPreferencesCache)
+        val buttonWipeCaches = findViewById<Button>(R.id.buttonWipeCaches)
 
         switchAutoLogin.isChecked= sharedPreferences.autoLogin
         editTextHomePageDays.hint= sharedPreferences.homePageDays.toString()
@@ -34,6 +33,13 @@ class PreferencesActivity : AppCompatActivity() {
 
         buttonWipeEncryptedPreferenceStorage.setOnClickListener {
             encryptedPreferenceStorage.wipeEncryptedSharedPreferences()
+        }
+        buttonWipeCaches.setOnClickListener {
+            val dirMessages = applicationContext.getDir(MESSAGE_FILES_DIR_NAME, MODE_PRIVATE)
+            dirMessages.delete()
+            val dirSchedule = applicationContext.getDir(SCHOOLDAY_FILES_DIR_NAME, MODE_PRIVATE)
+            dirSchedule.delete()
+
         }
 
         editTextHomePageDays.addTextChangedListener(object : TextWatcher{
@@ -50,7 +56,6 @@ class PreferencesActivity : AppCompatActivity() {
                     when(e){
                         is NullPointerException, is NumberFormatException -> Toast.makeText(this@PreferencesActivity, "Please type in a number", Toast.LENGTH_SHORT).show()
                     }
-
                 }
             }
         })

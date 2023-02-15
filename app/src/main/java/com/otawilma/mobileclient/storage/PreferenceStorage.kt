@@ -1,4 +1,4 @@
-package com.otawilma.mobileclient
+package com.otawilma.mobileclient.storage
 
 import android.content.Context
 

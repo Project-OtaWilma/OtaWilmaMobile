@@ -1,11 +1,11 @@
-package com.otawilma.mobileclient
+package com.otawilma.mobileclient.storage
 
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
 
-class EncryptedPreferenceStorage(private val context: Context) {
+class EncryptedPreferenceStorage(context: Context) {
 
     private val encryptedPreferenceFileName = "com.otawilma.mobileclient.encryptedPreferences"
     private val masterKey = MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()

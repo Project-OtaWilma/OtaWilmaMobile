@@ -7,14 +7,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.otawilma.mobileclient.*
-import com.otawilma.mobileclient.dataClasses.SchoolDay
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
-import java.time.LocalDate
 
 class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking {
 
@@ -31,48 +25,7 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
 
         coroutineScope.launch {
 
-
-
-            val schoolDayFlow : Flow<MutableList<SchoolDay>> = flow {
-
-                var day = LocalDate.now()
-
-                val listCache : MutableList<SchoolDay> = mutableListOf()
-                while (listCache.size < sharedPreferences.homePageDays && day <= LocalDate.now().plusDays(20)) {
-                    val element = dayRepository.getCached(day)
-                    if (element != null && element.items.isNotEmpty()) {
-                        listCache.add(element)
-                        emit(listCache)
-                    }
-                    day = day.plusDays(1)
-                }
-
-                day = LocalDate.now()
-
-                val listActual : MutableList<SchoolDay> = mutableListOf()
-                while (listActual.size < sharedPreferences.homePageDays && day <= LocalDate.now().plusDays(20)) {
-                    var token = waitUntilToken(context!!)
-
-                    while (true) {
-                        try {
-                            val element = dayRepository.getFromServer(token, day)
-                            if (element != null && element.items.isNotEmpty()) {
-                                listActual.add(element)
-                            }
-                            day = day.plusDays(1)
-                            break
-                        } catch (e : Exception){
-                            when (e){
-                                is InvalidTokenNetworkException -> token = invalidateTokenAndGetNew(context!!)
-                                is UnknownHostException, is SocketTimeoutException, -> delay(100)
-                                else -> throw e
-                            }
-                        }
-                    }
-                }
-                emit(listActual)
-            }
-
+            val schoolDayFlow = dayRepository.schoolDayFlow
             schoolDayFlow.collect {
                 coroutineScopeMain.launch {
                     timeTableDayAdapter.submitItems(it)

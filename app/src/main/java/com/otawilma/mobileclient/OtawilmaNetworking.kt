@@ -21,9 +21,27 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.time.LocalDate
 
 interface OtawilmaNetworking : LessonParser, MessageParser {
+
+    suspend fun repeatUntilSuccess(context : Context, token: String, handle : suspend (String) -> Unit){
+        var token = token
+        while (true) {
+            try {
+                handle(token)
+                break
+            } catch (e : Exception){
+                when (e){
+                    is InvalidTokenNetworkException -> token = invalidateTokenAndGetNew(context)
+                    is UnknownHostException, is SocketTimeoutException, -> delay(100)
+                    else -> throw e
+                }
+            }
+        }
+    }
 
     suspend fun handleInvalidToken(context: Context) : String{
         CoroutineScope(Dispatchers.Main).launch{

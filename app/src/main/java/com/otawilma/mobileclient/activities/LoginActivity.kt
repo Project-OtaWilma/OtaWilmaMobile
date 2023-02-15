@@ -120,7 +120,6 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
                 }
 
             }
-
             //if one the field are empty
             else Toast.makeText(
                 this,
@@ -130,7 +129,6 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
         }
 
         // Toolbar
-
         val toolbar = findViewById<Toolbar>(R.id.toolbarLogin)
         setSupportActionBar(toolbar)
     }
