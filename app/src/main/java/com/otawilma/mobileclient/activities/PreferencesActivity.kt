@@ -5,9 +5,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Switch
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import com.otawilma.mobileclient.MESSAGE_FILES_DIR_NAME
 import com.otawilma.mobileclient.R
 import com.otawilma.mobileclient.SCHOOLDAY_FILES_DIR_NAME
@@ -21,13 +21,13 @@ class PreferencesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_preferences)
 
-        val switchAutoLogin = findViewById<Switch>(R.id.switchPreferencesAutoLogin)
+        val switchAutoLogin = findViewById<SwitchCompat>(R.id.switchPreferencesAutoLogin)
         val buttonWipeEncryptedPreferenceStorage = findViewById<Button>(R.id.buttonWipeEncryptedStorage)
         val editTextHomePageDays = findViewById<EditText>(R.id.editTextNumberAmoutOfDays)
         val buttonReturn = findViewById<Button>(R.id.buttonPrefReturn)
 
         // TODO implement later
-        val switchCache = findViewById<Switch>(R.id.switchPreferencesCache)
+        val switchCache = findViewById<SwitchCompat>(R.id.switchPreferencesCache)
         val buttonWipeCaches = findViewById<Button>(R.id.buttonWipeCaches)
 
         switchAutoLogin.isChecked = sharedPreferences.autoLogin
