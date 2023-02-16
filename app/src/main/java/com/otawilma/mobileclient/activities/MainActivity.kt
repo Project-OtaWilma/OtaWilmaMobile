@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -12,15 +13,14 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.navigation.NavigationView
-import com.otawilma.mobileclient.InvalidTokenNetworkException
 import com.otawilma.mobileclient.OtawilmaNetworking
 import com.otawilma.mobileclient.R
 import com.otawilma.mobileclient.initAppData
+import com.otawilma.mobileclient.storage.EncryptedPreferenceStorage
+import com.otawilma.mobileclient.tokenGlobal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.net.SocketTimeoutException
 
 class MainActivity : AppCompatActivity(), OtawilmaNetworking, NavigationView.OnNavigationItemSelectedListener {
 
@@ -71,20 +71,19 @@ class MainActivity : AppCompatActivity(), OtawilmaNetworking, NavigationView.OnN
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.menuMainLogout ->{
+                val encryptedPreferenceStorage = EncryptedPreferenceStorage(applicationContext)
+                tokenGlobal = null
                 CoroutineScope(Dispatchers.IO).launch {
-                    var token = waitUntilToken(applicationContext)
-                    while (true) {
-                        try {
-                            logout(token)
-                            break
-                        } catch (e: InvalidTokenNetworkException) {
-                            token = invalidateTokenAndGetNew(applicationContext)
-                        } catch (e: SocketTimeoutException){
-                            delay(100)
-                        }
+                    repeatUntilSuccess(applicationContext, waitUntilToken(applicationContext)) { token ->
+                        logout(token)
+                    }
+                    CoroutineScope(Dispatchers.Main).launch {
+                        encryptedPreferenceStorage.otaWilmaToken = null
+                        encryptedPreferenceStorage.passWord = null
+                        encryptedPreferenceStorage.userName = null
+                        Toast.makeText(applicationContext,"Logout successful",Toast.LENGTH_SHORT).show()
                     }
                 }
-                startActivity(Intent(this@MainActivity, LoginActivity::class.java).putExtra("loggedOut", true))
             }
             R.id.menuMainHome -> navController.navigate(R.id.fragmentHomePage)
             R.id.menuMainSchedule -> navController.navigate(R.id.fragmentSchedule)

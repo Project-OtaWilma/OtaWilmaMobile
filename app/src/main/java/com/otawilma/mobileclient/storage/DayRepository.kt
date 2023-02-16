@@ -9,6 +9,7 @@ import java.time.LocalDate
 class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDayCache{
 
     private val scheduleMem : HashMap<LocalDate, SchoolDay> = hashMapOf()
+    private val serverCache : HashMap<LocalDate, SchoolDay> = hashMapOf()
     private val sharedPreferences = PreferenceStorage(context)
 
     val schoolDayFlow = flow {
@@ -52,6 +53,10 @@ class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDay
     }
 
     private suspend fun getFromServer(token: String, day: LocalDate) : SchoolDay? {
+
+        val stored : SchoolDay? = serverCache[day]
+        if (stored != null) return stored
+
         val week = getScheduleOfAWeek(token, day)
 
         if (week != null) {
@@ -59,6 +64,7 @@ class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDay
                 val date = schoolDay.date
                 storeScheduleOfADay(context, schoolDay)
                 scheduleMem[date] = schoolDay
+                serverCache[date] = schoolDay
             }
             return scheduleMem[day]
         }

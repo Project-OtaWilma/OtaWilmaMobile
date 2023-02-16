@@ -38,7 +38,8 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
             } catch (e : Exception){
                 when (e){
                     is InvalidTokenNetworkException -> token = invalidateTokenAndGetNew(context)
-                    is UnknownHostException, is SocketTimeoutException, -> delay(100)
+                    is UnknownHostException, is SocketTimeoutException -> delay(100)
+                    is OtaWilmaDownException -> delay(100)
                     else -> throw e
                 }
             }
@@ -165,12 +166,11 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
         }
     }
 
-    suspend fun logout (token: String) : Boolean{
-        val request = Request.Builder().url("$OTAWILMA_API_URL/logout").header("token",token).build()
+    suspend fun logout (token: String){
+        val request = Request.Builder().url("$OTAWILMA_API_URL/logout").post("".toRequestBody()).header("token",token).build()
 
         client.newCall(request).execute().use {
             checkCode(it.code)
-            return true
         }
     }
 
@@ -190,7 +190,7 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
             /* The keys are the days and the body look as follows:
 
              "2022-12-04": {
-            "day": { // contains the informatiom about the specific day
+            "day": { // contains the information about the specific day
                 "date": 0, // index of the day. Sunday is '0' and Saturday '6'.
                 "caption": "Su 4.12", // Caption of the day in [Ww dd.mm] format
                 "full": "Sunnuntai 2022-12-04" // Full caption of the day [] [Ww yyyy-mm-dd] format

@@ -33,8 +33,6 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
 
         // TODO kovin legacya
         super.onCreate(savedInstanceState)
-        val intent = intent
-        val loggedOut = intent.getBooleanExtra("loggedOut",false)
 
         //load the login screen
         setContentView(R.layout.activity_login)
@@ -43,11 +41,8 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
         val passwordField = findViewById<EditText>(R.id.editTextLoginPassword)
         progressBarLoginStatus = findViewById<ProgressBar>(R.id.progressBarLoginStatus)
 
-         // Login logic
-        val autoLogin = sharedPreferences.autoLogin
-
         //guard for logging in
-        if (autoLogin && !loggedOut){
+        if (sharedPreferences.autoLogin){
             progressBarLoginStatus.visibility = View.VISIBLE
             val storedToken :String? = encryptedPreferenceStorage.otaWilmaToken
             val storedUserName : String? = encryptedPreferenceStorage.userName
@@ -109,7 +104,7 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
                         tokenGlobal = result
 
                         // Store credentials if wanted to
-                        if (autoLogin) {
+                        if (sharedPreferences.autoLogin) {
                             encryptedPreferenceStorage.otaWilmaToken = tokenGlobal
                             encryptedPreferenceStorage.userName = userName
                             encryptedPreferenceStorage.passWord = password
