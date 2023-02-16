@@ -26,6 +26,8 @@ interface MessageCache {
     }
 
     fun storeMessage(context: Context, message: Message){
+        val preferenceStorage = PreferenceStorage(context)
+        if (!preferenceStorage.enableCache) return
         val dir = context.getDir(MESSAGE_FILES_DIR_NAME, Context.MODE_PRIVATE)
         val file = File(dir, "${message.id}")
 

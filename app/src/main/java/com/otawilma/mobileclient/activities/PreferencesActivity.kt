@@ -30,8 +30,8 @@ class PreferencesActivity : AppCompatActivity() {
         val switchCache = findViewById<Switch>(R.id.switchPreferencesCache)
         val buttonWipeCaches = findViewById<Button>(R.id.buttonWipeCaches)
 
-        switchAutoLogin.isChecked= sharedPreferences.autoLogin
-        editTextHomePageDays.hint= sharedPreferences.homePageDays.toString()
+        switchAutoLogin.isChecked = sharedPreferences.autoLogin
+        editTextHomePageDays.hint = sharedPreferences.homePageDays.toString()
 
         switchAutoLogin.setOnClickListener {
             sharedPreferences.autoLogin=switchAutoLogin.isChecked
@@ -46,6 +46,10 @@ class PreferencesActivity : AppCompatActivity() {
             val dirSchedule = applicationContext.getDir(SCHOOLDAY_FILES_DIR_NAME, MODE_PRIVATE)
             dirSchedule.delete()
 
+        }
+        switchCache.isChecked = sharedPreferences.enableCache
+        switchCache.setOnClickListener {
+            sharedPreferences.enableCache = switchCache.isChecked
         }
 
         editTextHomePageDays.addTextChangedListener(object : TextWatcher{

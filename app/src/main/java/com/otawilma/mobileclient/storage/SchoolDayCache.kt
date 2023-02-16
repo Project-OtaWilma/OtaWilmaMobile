@@ -22,6 +22,8 @@ interface SchoolDayCache {
     }
 
     fun storeScheduleOfADay(context: Context, schoolDay: SchoolDay){
+        val preferenceStorage = PreferenceStorage(context)
+        if (!preferenceStorage.enableCache) return
         val dir = context.getDir(SCHOOLDAY_FILES_DIR_NAME, Context.MODE_PRIVATE)
         val file = File(dir,"${schoolDay.date}")
 

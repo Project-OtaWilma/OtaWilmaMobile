@@ -12,6 +12,10 @@ class PreferenceStorage(context: Context) {
         get() = sharedPreferences.getBoolean("autoLogin", false)
         set(value) {sharedPreferences.edit().putBoolean("autoLogin",value).apply()}
 
+    var enableCache
+        get() = sharedPreferences.getBoolean("caching", true)
+        set(value) {sharedPreferences.edit().putBoolean("caching", value).apply()}
+
     var homePageDays
         get() = sharedPreferences.getInt("homePageDays",3)
         set(value) {sharedPreferences.edit().putInt("homePageDays",value).apply()}
