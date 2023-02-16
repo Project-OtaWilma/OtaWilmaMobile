@@ -8,10 +8,16 @@ import android.widget.EditText
 import android.widget.Switch
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.otawilma.mobileclient.*
+import com.otawilma.mobileclient.MESSAGE_FILES_DIR_NAME
+import com.otawilma.mobileclient.R
+import com.otawilma.mobileclient.SCHOOLDAY_FILES_DIR_NAME
+import com.otawilma.mobileclient.storage.EncryptedPreferenceStorage
+import com.otawilma.mobileclient.storage.PreferenceStorage
 
 class PreferencesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val encryptedPreferenceStorage = EncryptedPreferenceStorage(applicationContext)
+        val sharedPreferences = PreferenceStorage(applicationContext)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_preferences)
 

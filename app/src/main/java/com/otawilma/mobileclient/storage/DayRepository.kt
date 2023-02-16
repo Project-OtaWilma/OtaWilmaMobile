@@ -3,22 +3,20 @@ package com.otawilma.mobileclient.storage
 import android.content.Context
 import com.otawilma.mobileclient.OtawilmaNetworking
 import com.otawilma.mobileclient.dataClasses.SchoolDay
-import com.otawilma.mobileclient.dayRepository
-import com.otawilma.mobileclient.sharedPreferences
 import kotlinx.coroutines.flow.flow
 import java.time.LocalDate
 
 class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDayCache{
 
     private val scheduleMem : HashMap<LocalDate, SchoolDay> = hashMapOf()
+    private val sharedPreferences = PreferenceStorage(context)
 
     val schoolDayFlow = flow {
 
         var day = LocalDate.now()
-
         val listCache : MutableList<SchoolDay> = mutableListOf()
         while (listCache.size < sharedPreferences.homePageDays && day <= LocalDate.now().plusDays(20)) {
-            val element = dayRepository.getCached(day)
+            val element = getCached(day)
             if (element != null && element.items.isNotEmpty()) {
                 listCache.add(element)
                 emit(listCache)
@@ -31,7 +29,7 @@ class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDay
         val listActual : MutableList<SchoolDay> = mutableListOf()
         while (listActual.size < sharedPreferences.homePageDays && day <= LocalDate.now().plusDays(20)) {
             repeatUntilSuccess(context, waitUntilToken(context)) { token ->
-                val element = dayRepository.getFromServer(token, day)
+                val element = getFromServer(token, day)
                 if (element != null && element.items.isNotEmpty()) {
                     listActual.add(element)
                 }

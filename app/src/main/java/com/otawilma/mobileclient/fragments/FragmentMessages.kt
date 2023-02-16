@@ -16,18 +16,18 @@ import com.otawilma.mobileclient.OtawilmaNetworking
 import com.otawilma.mobileclient.R
 import com.otawilma.mobileclient.dataClasses.Message
 import com.otawilma.mobileclient.dataClasses.MessageItem
-import com.otawilma.mobileclient.messageRepository
 import com.otawilma.mobileclient.messaging.MessageAdapter
 import com.otawilma.mobileclient.messaging.MessageClickListener
+import com.otawilma.mobileclient.storage.MessageRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 
 class FragmentMessages : Fragment(R.layout.fragment_messages), OtawilmaNetworking, MessageClickListener {
 
     private lateinit var messageAdapter : MessageAdapter
+    val messageRepository = MessageRepository(requireContext())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +58,7 @@ class FragmentMessages : Fragment(R.layout.fragment_messages), OtawilmaNetworkin
         Log.d("Messaging", "Clicked $messageItem")
         CoroutineScope(Dispatchers.IO).launch {
 
-            val token = waitUntilToken(context!!)
+            val token = waitUntilToken(requireContext())
 
             val messageToDisplay = getMessageBody(token, messageItem as Message)
 

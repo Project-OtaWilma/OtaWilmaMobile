@@ -12,7 +12,11 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.otawilma.mobileclient.*
+import com.otawilma.mobileclient.OtawilmaNetworking
+import com.otawilma.mobileclient.R
+import com.otawilma.mobileclient.storage.EncryptedPreferenceStorage
+import com.otawilma.mobileclient.storage.PreferenceStorage
+import com.otawilma.mobileclient.tokenGlobal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -24,6 +28,8 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
     private val scopeIO = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharedPreferences = PreferenceStorage(applicationContext)
+        val encryptedPreferenceStorage = EncryptedPreferenceStorage(applicationContext)
 
         // TODO kovin legacya
         super.onCreate(savedInstanceState)

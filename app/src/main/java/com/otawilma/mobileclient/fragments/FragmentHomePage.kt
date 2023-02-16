@@ -9,14 +9,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.otawilma.mobileclient.OtawilmaNetworking
 import com.otawilma.mobileclient.R
 import com.otawilma.mobileclient.TimeTableDayAdapter
-import com.otawilma.mobileclient.dayRepository
+import com.otawilma.mobileclient.storage.DayRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking {
+
 
     private lateinit var timeTableDayAdapter: TimeTableDayAdapter
 
@@ -24,6 +24,7 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
     private val coroutineScopeMain = CoroutineScope(Dispatchers.Main )
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val dayRepository = DayRepository(requireContext())
         super.onCreate(savedInstanceState)
         timeTableDayAdapter = TimeTableDayAdapter()
 

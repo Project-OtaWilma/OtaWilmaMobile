@@ -11,6 +11,8 @@ import com.otawilma.mobileclient.dataClasses.Message
 import com.otawilma.mobileclient.dataClasses.SchoolDay
 import com.otawilma.mobileclient.parsesrs.LessonParser
 import com.otawilma.mobileclient.parsesrs.MessageParser
+import com.otawilma.mobileclient.storage.EncryptedPreferenceStorage
+import com.otawilma.mobileclient.storage.PreferenceStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -52,7 +54,7 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
         }
 
         while (true){
-            try {return getToken()}
+            try {return getToken(context)}
                 catch (_: NoStoredTokenException){
                 delay(10)
             }
@@ -62,6 +64,7 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
     }
 
     suspend fun invalidateTokenAndGetNew(context: Context) : String {
+        val encryptedPreferenceStorage = EncryptedPreferenceStorage(context)
         tokenGlobal = null
         encryptedPreferenceStorage.otaWilmaToken = null
         return waitUntilToken(context)
@@ -69,7 +72,7 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
 
     suspend fun waitUntilToken(context: Context) : String{
         while (true){
-            try {return getToken()}
+            try {return getToken(context)}
             catch (e: Exception){
                 when(e){
                     is NoStoredTokenException -> return handleInvalidToken(context)
@@ -81,7 +84,10 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
     }
 
     // Returns a token or gets one from the server
-    suspend fun getToken() : String {
+    suspend fun getToken(context: Context) : String {
+
+        val encryptedPreferenceStorage = EncryptedPreferenceStorage(context)
+        val sharedPreferences = PreferenceStorage(context)
 
         // If we have a token, then very good
         if (tokenGlobal != null) return tokenGlobal!!

@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(), OtawilmaNetworking, NavigationView.OnN
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initAppData(this.applicationContext)
+        initAppData()
 
         setContentView(R.layout.activity_main)
 
