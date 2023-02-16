@@ -27,9 +27,9 @@ import kotlinx.coroutines.launch
 class FragmentMessages : Fragment(R.layout.fragment_messages), OtawilmaNetworking, MessageClickListener {
 
     private lateinit var messageAdapter : MessageAdapter
-    val messageRepository = MessageRepository(requireContext())
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val messageRepository = MessageRepository(requireContext())
         super.onCreate(savedInstanceState)
         messageAdapter = MessageAdapter(this@FragmentMessages)
 

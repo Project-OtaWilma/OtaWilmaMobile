@@ -101,10 +101,9 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
                 progressBarLoginStatus.visibility = View.VISIBLE
                  scopeIO.launch {
 
+                     //TODO does not work without internet
                      val result = login(userName,password)
 
-                    // first = did it succeed?
-                    // second = token
                     if (result != null) {
                         Log.d("Networking", "token is: $result")
                         tokenGlobal = result

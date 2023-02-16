@@ -76,7 +76,7 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
             catch (e: Exception){
                 when(e){
                     is NoStoredTokenException -> return handleInvalidToken(context)
-                    is OtaWilmaDownException, is WilmaDownException -> delay(100)
+                    is OtaWilmaDownException, is WilmaDownException, is SocketTimeoutException-> delay(100)
                     else -> throw e
                 }
             }

@@ -22,10 +22,10 @@ class MessageRepository (private val context: Context) : OtawilmaNetworking, Mes
     }
 
     private fun getCachedList(until: Int) : List<Message>?{
-        if (until <= messageMem.size) return messageMem.subList(0,until)
+        if (until <= messageMem.size) return messageMem.subList(0,until - 1)
 
         messageMem = getStoredMessages(context, until) ?: listOf()
-        if (until <= messageMem.size) return messageMem.subList(0,until)
+        if (until <= messageMem.size) return messageMem.subList(0,until - 1)
 
         return null
     }

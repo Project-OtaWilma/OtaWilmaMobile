@@ -27,7 +27,7 @@ interface MessageCache {
 
     fun storeMessage(context: Context, message: Message){
         val dir = context.getDir(MESSAGE_FILES_DIR_NAME, Context.MODE_PRIVATE)
-        val file = File(dir, "${message.timestamp}")
+        val file = File(dir, "${message.id}")
 
         file.writeText(jackSonMapper.writeValueAsString(message))
     }
