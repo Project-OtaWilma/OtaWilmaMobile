@@ -12,15 +12,14 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.otawilma.mobileclient.OtawilmaNetworking
-import com.otawilma.mobileclient.R
+import com.otawilma.mobileclient.*
 import com.otawilma.mobileclient.storage.EncryptedPreferenceStorage
 import com.otawilma.mobileclient.storage.PreferenceStorage
-import com.otawilma.mobileclient.tokenGlobal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import java.net.SocketTimeoutException
 
 class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
 
@@ -93,30 +92,38 @@ class LoginActivity : AppCompatActivity(), OtawilmaNetworking {
             //attempt to login
             if (userName!=""&&password!=""){
 
+                //TODO make logging in optional
                 progressBarLoginStatus.visibility = View.VISIBLE
                  scopeIO.launch {
+                     try {
+                         val result = login(userName,password)
 
-                     //TODO does not work without internet
-                     val result = login(userName,password)
+                         if (result != null) {
+                             Log.d("Networking", "token is: $result")
+                             tokenGlobal = result
 
-                    if (result != null) {
-                        Log.d("Networking", "token is: $result")
-                        tokenGlobal = result
+                             // Store credentials if wanted to
+                             if (sharedPreferences.autoLogin) {
+                                 encryptedPreferenceStorage.otaWilmaToken = tokenGlobal
+                                 encryptedPreferenceStorage.userName = userName
+                                 encryptedPreferenceStorage.passWord = password
+                             }
+                             CoroutineScope(Dispatchers.Main).launch {
+                                 goToMain()
+                             }
+                         }else{
+                             runOnUiThread {
+                                 Toast.makeText(this@LoginActivity, R.string.checkCredentials, Toast.LENGTH_SHORT).show()
+                             }
+                         }
+                     } catch (e : Exception){
+                         when (e){
+                             is OtaWilmaDownException, is WilmaDownException -> runOnUiThread { Toast.makeText(this@LoginActivity, "OtawilmaOrWilma is down", Toast.LENGTH_SHORT).show() }
+                             is SocketTimeoutException -> runOnUiThread { Toast.makeText(this@LoginActivity, "Please enable internet on your device", Toast.LENGTH_SHORT).show() }
+                             is RateLimitException -> runOnUiThread { Toast.makeText(this@LoginActivity, "Rate-Limit has been exceeded, please wait", Toast.LENGTH_SHORT).show() }
+                         }
+                     }
 
-                        // Store credentials if wanted to
-                        if (sharedPreferences.autoLogin) {
-                            encryptedPreferenceStorage.otaWilmaToken = tokenGlobal
-                            encryptedPreferenceStorage.userName = userName
-                            encryptedPreferenceStorage.passWord = password
-                        }
-                        CoroutineScope(Dispatchers.Main).launch {
-                            goToMain()
-                        }
-                    }else{
-                        runOnUiThread {
-                            Toast.makeText(this@LoginActivity, R.string.checkCredentials, Toast.LENGTH_SHORT).show()
-                        }
-                    }
                 }
 
             }

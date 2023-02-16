@@ -119,6 +119,7 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
             404, 500 -> throw OtaWilmaDownException("Otawilma is down")
             501 -> throw WilmaDownException("Wilma is down")
             401 -> throw InvalidTokenNetworkException("The token is invalid")
+            429 -> throw RateLimitException("Rate-limit has been exceeded")
             else -> throw Exception("Received unexpected code from server code: $code")
 
         }
