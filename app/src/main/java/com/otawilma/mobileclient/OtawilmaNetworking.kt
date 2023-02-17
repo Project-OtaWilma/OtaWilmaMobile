@@ -137,7 +137,6 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
                 return false
             }
         }
-
     }
 
     // Returns if Otawilma can reach the wilma-server
@@ -214,9 +213,6 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
         }
     }
 
-    // Find all of your new messages and returns them in the message format without bodies
-    //suspend fun getNewMessages(limit: Int) : List<MessageItem>
-
     // Get messages from the latest to until
     suspend fun getMessages(token : String, until : Int) : List<Message>{
         val request = Request.Builder().url("$OTAWILMA_API_URL/messages/inbox?limit=$until").header("token", token).build()
@@ -237,7 +233,6 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
 
     // Get appointments from the latest to until
     //suspend fun getAppointments(until: Int) : List<Appointment>
-
 
     // Get the message body
     suspend fun getMessageBody(token : String, message: Message) : Message? {

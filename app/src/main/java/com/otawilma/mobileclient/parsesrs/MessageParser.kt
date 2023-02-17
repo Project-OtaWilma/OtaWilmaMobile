@@ -1,13 +1,10 @@
 package com.otawilma.mobileclient.parsesrs
 
-import android.text.Html
-import android.text.Spanned
 import com.otawilma.mobileclient.dataClasses.Message
 import com.otawilma.mobileclient.dataClasses.Person
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -28,7 +25,7 @@ interface MessageParser : PersonParser {
         val timestamp: LocalDateTime = LocalDateTime.parse(messageJson["timeStamp"] as String,
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
         val senders: List<Person> = parsePersonList(messageJson["senders"] as JSONArray)
-        val body: Spanned? = null
+        val body: String? = null
         val recipients: List<Person>? = null
         val new: Boolean = messageJson["new"] as Boolean
 
@@ -38,7 +35,7 @@ interface MessageParser : PersonParser {
     // Fetch the body for the message
     fun getMessageBody(messageJson : JSONObject, message: Message) : Message{
 
-        val body: Spanned? = Html.fromHtml(getOrNull(messageJson, "content") as String,)
+        val body: String = getOrNull(messageJson, "content") as String
 
         message.body = body
 

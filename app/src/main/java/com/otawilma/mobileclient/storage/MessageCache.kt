@@ -25,12 +25,27 @@ interface MessageCache {
         }
     }
 
+    fun getStoredMessageBody(context: Context, message: Message) : String?{
+        return try {
+            val dir = context.getDir(MESSAGE_FILES_DIR_NAME, Context.MODE_PRIVATE)
+            val file = File(dir, "${message.id}")
+            jackSonMapper.readValue(file, Message::class.java).body
+        } catch (e : FileNotFoundException) {
+            null
+        }
+    }
+
     fun storeMessage(context: Context, message: Message){
         val preferenceStorage = PreferenceStorage(context)
         if (!preferenceStorage.enableCache) return
         val dir = context.getDir(MESSAGE_FILES_DIR_NAME, Context.MODE_PRIVATE)
         val file = File(dir, "${message.id}")
-
-        file.writeText(jackSonMapper.writeValueAsString(message))
+        try {
+            val storedMessage = jackSonMapper.readValue(file, Message::class.java)
+            message.body = storedMessage.body ?: message.body
+        } catch (_: FileNotFoundException){}
+        finally {
+            file.writeText(jackSonMapper.writeValueAsString(message))
+        }
     }
 }

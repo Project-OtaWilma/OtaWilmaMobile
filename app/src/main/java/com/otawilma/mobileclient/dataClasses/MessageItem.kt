@@ -1,6 +1,5 @@
 package com.otawilma.mobileclient.dataClasses
 
-import android.text.Spanned
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type
 import com.fasterxml.jackson.annotation.JsonTypeInfo
@@ -21,7 +20,7 @@ abstract class MessageItem {
     open val senders: List<Person>? = null
 
     @Transient
-    open val body: Spanned? = null
+    open var body: String? = null
 }
 
 @JsonTypeInfo(
@@ -38,7 +37,7 @@ data class Message(
     override val subject: String,
     override val timestamp: LocalDateTime,
     override val senders: List<Person>,
-    override var body: Spanned?,
+    override var body: String?,
     val recipients : List<Person>?,
     val new : Boolean
 ):MessageItem()
@@ -48,6 +47,6 @@ data class Appointment(
     override val subject: String,
     override val timestamp: LocalDateTime,
     override val senders: List<Person>,
-    override val body: Spanned?,
+    override var body: String?,
     val status : String
 ):MessageItem()

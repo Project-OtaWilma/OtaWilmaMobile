@@ -1,6 +1,7 @@
 package com.otawilma.mobileclient.fragments
 
 import android.os.Bundle
+import android.text.Html
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -57,36 +58,42 @@ class FragmentMessages : Fragment(R.layout.fragment_messages), OtawilmaNetworkin
     override fun onClick(messageItem: MessageItem) {
         Log.d("Messaging", "Clicked $messageItem")
         CoroutineScope(Dispatchers.IO).launch {
+            val messageRepository = MessageRepository(requireContext())
 
-            val token = waitUntilToken(requireContext())
+            // If the message has no body loaded in memory
+            if (messageItem.body == null){
+                messageItem.body = messageRepository.getStoredMessageBody(requireContext(),messageItem as Message)
 
-            val messageToDisplay = getMessageBody(token, messageItem as Message)
-
-            if (messageToDisplay != null) {
-                CoroutineScope(Dispatchers.Main).launch {
-                    Log.d("Messaging", "Body of message is: $messageToDisplay")
-
-                    val popUpView = layoutInflater.inflate(R.layout.popup_message, null)
-                    val popupWindow = PopupWindow(
-                        popUpView,
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                    )
-
-                    val textTitle = popUpView.findViewById<TextView>(R.id.textViewPopupMessageTitle)
-                    val textContent =
-                        popUpView.findViewById<TextView>(R.id.textViewPopupMessageContent)
-                    val buttonDismiss = popUpView.findViewById<ImageButton>(R.id.buttonDismissMessage)
-
-                    textTitle.text = messageToDisplay.subject
-                    textContent.text = messageToDisplay.body
-
-                    popupWindow.showAtLocation(activity?.findViewById(R.id.navHostFragmentMain),Gravity.TOP,0,0)
-
-
-                    buttonDismiss.setOnClickListener { popupWindow.dismiss() }
-
+                // If the message has no body cached
+                if (messageItem.body == null) repeatUntilSuccess(requireContext(),waitUntilToken(requireContext())){
+                    val networkedMessage = (getMessageBody(it,messageItem) as Message)
+                    messageItem.body = networkedMessage.body
+                    CoroutineScope(Dispatchers.IO).launch { messageRepository.storeMessage(requireContext(),messageItem) }
                 }
+            }
+            CoroutineScope(Dispatchers.Main).launch {
+                Log.d("Messaging", "Body of message is: $messageItem")
+
+                val popUpView = layoutInflater.inflate(R.layout.popup_message, null)
+                val popupWindow = PopupWindow(
+                    popUpView,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+
+                val textTitle = popUpView.findViewById<TextView>(R.id.textViewPopupMessageTitle)
+                val textContent =
+                    popUpView.findViewById<TextView>(R.id.textViewPopupMessageContent)
+                val buttonDismiss = popUpView.findViewById<ImageButton>(R.id.buttonDismissMessage)
+
+                textTitle.text = messageItem.subject
+                textContent.text = Html.fromHtml(messageItem.body, Html.FROM_HTML_MODE_COMPACT)
+
+                popupWindow.showAtLocation(activity?.findViewById(R.id.navHostFragmentMain),Gravity.TOP,0,0)
+
+
+                buttonDismiss.setOnClickListener { popupWindow.dismiss() }
+
             }
         }
     }

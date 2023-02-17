@@ -42,10 +42,10 @@ class PreferencesActivity : AppCompatActivity() {
         }
         buttonWipeCaches.setOnClickListener {
             val dirMessages = applicationContext.getDir(MESSAGE_FILES_DIR_NAME, MODE_PRIVATE)
-            dirMessages.delete()
+            dirMessages.deleteRecursively()
             val dirSchedule = applicationContext.getDir(SCHOOLDAY_FILES_DIR_NAME, MODE_PRIVATE)
-            dirSchedule.delete()
-
+            dirSchedule.deleteRecursively()
+            if (!dirMessages.exists() && !dirSchedule.exists()) Toast.makeText(applicationContext, "Caches deleted successfully", Toast.LENGTH_SHORT).show()
         }
         switchCache.isChecked = sharedPreferences.enableCache
         switchCache.setOnClickListener {
