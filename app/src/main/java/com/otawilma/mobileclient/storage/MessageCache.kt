@@ -19,7 +19,9 @@ interface MessageCache {
                 val item = jackSonMapper.readValue(i, Message::class.java)
                 messageItemList.add(item)
             }
-            messageItemList
+            messageItemList.sortedBy {
+                it.timestamp
+            }.reversed().take(until)
         } catch (e : FileNotFoundException){
             null
         }

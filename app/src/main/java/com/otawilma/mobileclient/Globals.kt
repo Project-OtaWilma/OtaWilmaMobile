@@ -12,6 +12,7 @@ val JUMP_LESSON_THRESHOLD: Duration = Duration.ofMinutes(30)
 val client = OkHttpClient()
 var tokenGlobal : String? = null
 val jackSonMapper = jacksonObjectMapper()
+const val NEW_MESSAGE_BATCH_SIZE : Int = 10
 
 fun initAppData(){
     jackSonMapper.findAndRegisterModules()

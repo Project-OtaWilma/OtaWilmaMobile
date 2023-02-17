@@ -23,7 +23,8 @@ class MessageAdapter(private val onClickListener : MessageClickListener) : Recyc
 
             messageSubject.text = messageItem.subject
             messageSender.text = messageItem.senders!!.joinToString(separator = " / ") { it.name }
-            messageTimestamp.text = messageItem.timestamp.toString()
+            val ts = messageItem.timestamp
+            messageTimestamp.text = "${ts?.dayOfMonth}.${ts?.monthValue}.${ts?.year} | ${ts?.hour}:${ts?.minute}"
 
             if (messageItem is Message && messageItem.new){
                 messageSubject.setTextColor(ContextCompat.getColor(itemView.context,R.color.black))
