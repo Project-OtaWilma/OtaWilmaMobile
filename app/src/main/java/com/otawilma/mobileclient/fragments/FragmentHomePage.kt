@@ -33,6 +33,7 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
         val dayRepository = DayRepository(requireContext())
         val messageRepository = MessageRepository(requireContext())
         super.onCreate(savedInstanceState)
+        activity?.title = getString(R.string.app_name) + " - Home"
 
         coroutineScope.launch {
             val schoolDayFlow = dayRepository.schoolDayFlow

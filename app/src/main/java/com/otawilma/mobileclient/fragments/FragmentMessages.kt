@@ -32,6 +32,7 @@ class FragmentMessages : Fragment(R.layout.fragment_messages), OtawilmaNetworkin
     override fun onCreate(savedInstanceState: Bundle?) {
         val messageRepository = MessageRepository(requireContext())
         super.onCreate(savedInstanceState)
+        activity?.title = getString(R.string.app_name) + " - Messages"
 
         CoroutineScope(Dispatchers.IO).launch {
             val messageFlow = messageRepository.messageFlow(100)
