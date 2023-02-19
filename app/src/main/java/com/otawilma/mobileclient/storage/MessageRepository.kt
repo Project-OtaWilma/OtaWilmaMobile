@@ -4,6 +4,7 @@ import android.content.Context
 import com.otawilma.mobileclient.NEW_MESSAGE_BATCH_SIZE
 import com.otawilma.mobileclient.OtawilmaNetworking
 import com.otawilma.mobileclient.dataClasses.Message
+import com.otawilma.mobileclient.jackSonMapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -12,6 +13,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 class MessageRepository (private val context: Context) : OtawilmaNetworking, MessageCache{
+
+    init {
+        jackSonMapper.findAndRegisterModules()
+    }
 
     private var messageMem : List<Message> = listOf()
 

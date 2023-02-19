@@ -15,7 +15,6 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.navigation.NavigationView
 import com.otawilma.mobileclient.OtawilmaNetworking
 import com.otawilma.mobileclient.R
-import com.otawilma.mobileclient.initAppData
 import com.otawilma.mobileclient.storage.EncryptedPreferenceStorage
 import com.otawilma.mobileclient.tokenGlobal
 import kotlinx.coroutines.CoroutineScope
@@ -29,7 +28,6 @@ class MainActivity : AppCompatActivity(), OtawilmaNetworking, NavigationView.OnN
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initAppData()
 
         setContentView(R.layout.activity_main)
 

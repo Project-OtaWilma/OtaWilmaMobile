@@ -3,6 +3,7 @@ package com.otawilma.mobileclient.storage
 import android.content.Context
 import com.otawilma.mobileclient.OtawilmaNetworking
 import com.otawilma.mobileclient.dataClasses.SchoolDay
+import com.otawilma.mobileclient.jackSonMapper
 import kotlinx.coroutines.flow.flow
 import java.time.LocalDate
 
@@ -11,6 +12,10 @@ class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDay
     private val scheduleMem : HashMap<LocalDate, SchoolDay> = hashMapOf()
     private val serverCache : HashMap<LocalDate, SchoolDay> = hashMapOf()
     private val sharedPreferences = PreferenceStorage(context)
+
+    init {
+        jackSonMapper.findAndRegisterModules()
+    }
 
     val schoolDayFlow = flow {
 
