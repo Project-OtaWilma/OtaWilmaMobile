@@ -60,9 +60,8 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
 
             // THIS IS BULLSHIT FUCK YOU DROID
             layoutManager = layoutManagerBetter
-            isNestedScrollingEnabled = false
+            isNestedScrollingEnabled = true
             adapter = timeTableDayAdapter
-
         }
 
         view.findViewById<RecyclerView>(R.id.recyclerViewHomeMessages)?.apply {
