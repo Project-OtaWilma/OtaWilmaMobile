@@ -40,6 +40,7 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
                     is InvalidTokenNetworkException -> token = invalidateTokenAndGetNew(context)
                     is UnknownHostException, is SocketTimeoutException -> delay(100)
                     is OtaWilmaDownException -> delay(100)
+                    is RateLimitException -> delay(100)
                     else -> throw e
                 }
             }

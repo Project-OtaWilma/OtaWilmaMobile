@@ -14,7 +14,7 @@ import java.util.*
 
 
 class TimeTableDayAdapter: RecyclerView.Adapter<TimeTableDayAdapter.TimeTableDayViewHolder>() {
-    private var items: List<DayItem> = emptyList()
+    private var items: Array<DayItem> = arrayOf()
 
     // The view holder class
     class TimeTableDayViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
@@ -36,6 +36,8 @@ class TimeTableDayAdapter: RecyclerView.Adapter<TimeTableDayAdapter.TimeTableDay
 
     }
 
+    fun getItemAtPosition (position: Int) = items[position]
+
     fun submitItems(list: List<SchoolDay>){
 
 
@@ -48,8 +50,13 @@ class TimeTableDayAdapter: RecyclerView.Adapter<TimeTableDayAdapter.TimeTableDay
             itemMutableList.add(i)
             last = i
         }
-        items = itemMutableList
+        items = itemMutableList.toTypedArray()
         notifyDataSetChanged()
+    }
+
+    fun submitChange(schoolDay: SchoolDay, position: Int){
+        items[position] = schoolDay
+        notifyItemChanged(position)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeTableDayViewHolder {

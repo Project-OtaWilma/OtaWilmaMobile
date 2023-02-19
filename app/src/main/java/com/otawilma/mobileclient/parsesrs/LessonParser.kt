@@ -109,17 +109,11 @@ interface LessonParser {
                         }
                     }
                     lessonMutableList.add(newLesson)
-
-
-
                 }
-
                 Log.d("Parsing","Parsed lesson $startTime and $endTime")
             }
-
             schoolDayMutableList.add(SchoolDay(date, lessonMutableList))
         }
-
         return schoolDayMutableList
-        }
+    }
 }

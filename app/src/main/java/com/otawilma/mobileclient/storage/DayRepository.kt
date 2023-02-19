@@ -4,6 +4,7 @@ import android.content.Context
 import com.otawilma.mobileclient.OtawilmaNetworking
 import com.otawilma.mobileclient.dataClasses.SchoolDay
 import com.otawilma.mobileclient.jackSonMapper
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.time.LocalDate
 
@@ -17,14 +18,14 @@ class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDay
         jackSonMapper.findAndRegisterModules()
     }
 
-    val schoolDayFlow = flow {
+    val schoolDayFlowForHomePage = flow {
 
         var day = LocalDate.now()
         val listCache : MutableList<SchoolDay> = mutableListOf()
         while (listCache.size < sharedPreferences.homePageDays && day <= LocalDate.now().plusDays(20)) {
             val element = getCached(day)
             if (element != null && element.items.isNotEmpty()) {
-                listCache.add(element)
+                listCache.add(element.cached())
                 emit(listCache)
             }
             day = day.plusDays(1)
@@ -37,12 +38,20 @@ class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDay
             repeatUntilSuccess(context, waitUntilToken(context)) { token ->
                 val element = getFromServer(token, day)
                 if (element != null && element.items.isNotEmpty()) {
-                    listActual.add(element)
+                    listActual.add(element.updated())
                 }
                 day = day.plusDays(1)
             }
         }
+        serverCache.clear()
         emit(listActual)
+    }
+
+    fun schoolDayFlow(date : LocalDate) : Flow<SchoolDay> = flow {
+        emit(getCached(date) ?: SchoolDay(date, listOf(), SchoolDay.NO_INFO))
+        repeatUntilSuccess(context, waitUntilToken(context)){
+            emit(getFromServer(it, date)?: SchoolDay(date))
+        }
     }
 
     private fun getCached(day : LocalDate) : SchoolDay? {
@@ -59,7 +68,7 @@ class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDay
 
     private suspend fun getFromServer(token: String, day: LocalDate) : SchoolDay? {
 
-        val stored : SchoolDay? = serverCache[day]
+        val stored : SchoolDay? = serverCache[day]?.updated()
         if (stored != null) return stored
 
         val week = getScheduleOfAWeek(token, day)
@@ -68,8 +77,8 @@ class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDay
             for (schoolDay in week){
                 val date = schoolDay.date
                 storeScheduleOfADay(context, schoolDay)
-                scheduleMem[date] = schoolDay
-                serverCache[date] = schoolDay
+                scheduleMem[date] = schoolDay.updated()
+                serverCache[date] = schoolDay.updated()
             }
             return scheduleMem[day]
         }

@@ -1,6 +1,7 @@
 package com.otawilma.mobileclient.storage
 
 import android.content.Context
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.otawilma.mobileclient.SCHOOLDAY_FILES_DIR_NAME
 import com.otawilma.mobileclient.dataClasses.SchoolDay
 import com.otawilma.mobileclient.jackSonMapper
@@ -15,9 +16,12 @@ interface SchoolDayCache {
         return try {
             val dir = context.getDir(SCHOOLDAY_FILES_DIR_NAME, Context.MODE_PRIVATE)
             val file = File(dir, "$date")
-            jackSonMapper.readValue(file, SchoolDay::class.java)
-        }catch (e : FileNotFoundException){
-            null
+            jackSonMapper.readValue(file, SchoolDay::class.java).cached()
+        }catch (e : Exception){
+            when (e){
+                is FileNotFoundException, is MismatchedInputException -> null
+                else -> throw e
+            }
         }
     }
 

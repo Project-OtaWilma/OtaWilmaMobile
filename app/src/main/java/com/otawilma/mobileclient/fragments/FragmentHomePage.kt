@@ -36,7 +36,7 @@ class FragmentHomePage:Fragment(R.layout.fragment_home_page), OtawilmaNetworking
         activity?.title = getString(R.string.app_name) + " - Home"
 
         coroutineScope.launch {
-            val schoolDayFlow = dayRepository.schoolDayFlow
+            val schoolDayFlow = dayRepository.schoolDayFlowForHomePage
             schoolDayFlow.collect {
                 coroutineScopeMain.launch {
                     timeTableDayAdapter.submitItems(it)

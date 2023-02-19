@@ -71,7 +71,6 @@ class TimeTableAdapter: RecyclerView.Adapter<TimeTableAdapter.TimeTableViewHolde
 
         val currentItem = items[position]
         holder.bind(currentItem)
-
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -86,5 +85,4 @@ class TimeTableAdapter: RecyclerView.Adapter<TimeTableAdapter.TimeTableViewHolde
         private const val TYPE_LESSON = 0
         private const val TYPE_JUMP = 1
     }
-
 }
