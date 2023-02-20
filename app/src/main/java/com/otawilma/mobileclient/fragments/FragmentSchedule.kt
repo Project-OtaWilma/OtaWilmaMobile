@@ -48,7 +48,6 @@ class FragmentSchedule : Fragment(R.layout.fragment_schedule), OtawilmaNetworkin
             adapter = timeTableDayAdapter
         }
 
-        // TODO cut down networkRequests by 7
         // TODO fix height issue with "Hikkepäivät"
         // TODO add features
 
@@ -60,23 +59,36 @@ class FragmentSchedule : Fragment(R.layout.fragment_schedule), OtawilmaNetworkin
 
         recyclerViewSchedule.setOnScrollChangeListener { _, _, _, _, _ ->
 
-                for (i in layoutManager.findFirstVisibleItemPosition() - 5..layoutManager.findLastVisibleItemPosition() + 5) {
+                for (i in layoutManager.findFirstVisibleItemPosition() - 20..layoutManager.findLastVisibleItemPosition() + 20) {
 
                     CoroutineScope(Dispatchers.IO).launch {
                     val item = timeTableDayAdapter.getItemAtPosition(i) as SchoolDay
                     val state = item.state
                     if (state != SchoolDay.UPDATED && !handled[i]) {
-                        handled[i] = true
+                        setHandledWeek(item.date, i, handled)
                         schoolDayRepository.schoolDayFlow(item.date).collect {
                             CoroutineScope(Dispatchers.Main).launch {
                                 timeTableDayAdapter.submitChange(it, i)
                             }
                         }
+                    } else if (state != SchoolDay.UPDATED) {
+                        schoolDayRepository.schoolDayCachedFlow(item.date).collect {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                timeTableDayAdapter.submitChange(it, i)
+                            }
+                        }
                     }
-                    handled[i] = true
+                        setHandledWeek(item.date, i, handled)
                 }
             }
         }
-        layoutManager.scrollToPosition(366)
+        layoutManager.scrollToPosition(365)
+    }
+
+    private fun setHandledWeek(date: LocalDate, index : Int, handled : BooleanArray){
+        val offset = date.dayOfWeek.value
+        for (i in 1..7){
+            handled[index+i-offset] = true
+        }
     }
 }

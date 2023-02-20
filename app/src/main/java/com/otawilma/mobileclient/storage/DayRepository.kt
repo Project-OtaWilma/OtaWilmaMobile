@@ -4,6 +4,7 @@ import android.content.Context
 import com.otawilma.mobileclient.OtawilmaNetworking
 import com.otawilma.mobileclient.dataClasses.SchoolDay
 import com.otawilma.mobileclient.jackSonMapper
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.time.LocalDate
@@ -52,6 +53,14 @@ class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDay
         repeatUntilSuccess(context, waitUntilToken(context)){
             emit(getFromServer(it, date)?: SchoolDay(date))
         }
+    }
+
+    fun schoolDayCachedFlow(date : LocalDate) : Flow<SchoolDay> = flow {
+        do {
+            val stored : SchoolDay? = serverCache[date]?.updated()
+            emit(stored ?: SchoolDay(date))
+            delay(10)
+        } while (stored == null)
     }
 
     private fun getCached(day : LocalDate) : SchoolDay? {

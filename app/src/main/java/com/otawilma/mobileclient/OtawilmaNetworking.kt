@@ -40,7 +40,10 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
                     is InvalidTokenNetworkException -> token = invalidateTokenAndGetNew(context)
                     is UnknownHostException, is SocketTimeoutException -> delay(100)
                     is OtaWilmaDownException -> delay(100)
-                    is RateLimitException -> delay(100)
+                    is RateLimitException -> {
+                        delay(100)
+                        Log.d("Networking", "rate limit reached")
+                    }
                     else -> throw e
                 }
             }
@@ -61,8 +64,6 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
                 delay(10)
             }
         }
-
-
     }
 
     suspend fun invalidateTokenAndGetNew(context: Context) : String {
