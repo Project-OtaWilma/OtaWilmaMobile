@@ -33,13 +33,11 @@ class TimeTableDayAdapter: RecyclerView.Adapter<TimeTableDayAdapter.TimeTableDay
                 adapter = adapterT
             }
         }
-
     }
 
     fun getItemAtPosition (position: Int) = items[position]
 
     fun submitItems(list: List<SchoolDay>){
-
 
         val itemMutableList = mutableListOf<DayItem>()
         var last : SchoolDay? = null
@@ -79,7 +77,6 @@ class TimeTableDayAdapter: RecyclerView.Adapter<TimeTableDayAdapter.TimeTableDay
         val currentItem = items[position]
 
         if (currentItem is SchoolDay) holder.bindSchoolDay(position, currentItem)
-
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -93,6 +90,5 @@ class TimeTableDayAdapter: RecyclerView.Adapter<TimeTableDayAdapter.TimeTableDay
     companion object {
         private const val TYPE_DAY = 0
         private const val TYPE_SEPARATOR = 1
-        var adapterList: ArrayList<TimeTableAdapter> = ArrayList()
     }
 }

@@ -1,7 +1,10 @@
 package com.otawilma.mobileclient.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.view.View.MeasureSpec
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,7 +36,6 @@ class FragmentSchedule : Fragment(R.layout.fragment_schedule), OtawilmaNetworkin
             )
         }
         timeTableDayAdapter.submitItems(schoolDayMutableList.toList())
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,7 +50,6 @@ class FragmentSchedule : Fragment(R.layout.fragment_schedule), OtawilmaNetworkin
             adapter = timeTableDayAdapter
         }
 
-        // TODO fix height issue with "Hikkepäivät"
         // TODO add features
 
         val handled : BooleanArray = BooleanArray(timeTableDayAdapter.itemCount){
@@ -58,30 +59,36 @@ class FragmentSchedule : Fragment(R.layout.fragment_schedule), OtawilmaNetworkin
         val layoutManager = (recyclerViewSchedule.layoutManager as LinearLayoutManager)
 
         recyclerViewSchedule.setOnScrollChangeListener { _, _, _, _, _ ->
-
-                for (i in layoutManager.findFirstVisibleItemPosition() - 20..layoutManager.findLastVisibleItemPosition() + 20) {
-
-                    CoroutineScope(Dispatchers.IO).launch {
-                    val item = timeTableDayAdapter.getItemAtPosition(i) as SchoolDay
-                    val state = item.state
-                    if (state != SchoolDay.UPDATED && !handled[i]) {
-                        setHandledWeek(item.date, i, handled)
-                        schoolDayRepository.schoolDayFlow(item.date).collect {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                timeTableDayAdapter.submitChange(it, i)
-                            }
-                        }
-                    } else if (state != SchoolDay.UPDATED) {
-                        schoolDayRepository.schoolDayCachedFlow(item.date).collect {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                timeTableDayAdapter.submitChange(it, i)
-                            }
+            for (i in layoutManager.findFirstVisibleItemPosition() - 20..layoutManager.findLastVisibleItemPosition() + 20) {
+                CoroutineScope(Dispatchers.IO).launch {
+                val item = timeTableDayAdapter.getItemAtPosition(i) as SchoolDay
+                val state = item.state
+                if (state != SchoolDay.UPDATED && !handled[i]) {
+                    setHandledWeek(item.date, i, handled)
+                    schoolDayRepository.schoolDayFlow(item.date).collect {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            timeTableDayAdapter.submitChange(it, i)
                         }
                     }
-                        setHandledWeek(item.date, i, handled)
+                } else if (state != SchoolDay.UPDATED) {
+                    schoolDayRepository.schoolDayCachedFlow(item.date).collect {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            timeTableDayAdapter.submitChange(it, i)
+                        }
+                    }
+                }
+                    setHandledWeek(item.date, i, handled)
                 }
             }
+            for (i in 0 until recyclerViewSchedule.childCount){
+                val child = recyclerViewSchedule[i]
+
+                // This took only around a fucking hour to find out
+                child.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
+                Log.d("Layout", "The Height of $i is ${child.measuredHeight}")
+            }
         }
+        // Set the starting position correctly
         layoutManager.scrollToPosition(365)
     }
 
