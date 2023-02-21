@@ -1,7 +1,6 @@
 package com.otawilma.mobileclient.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.View.MeasureSpec
 import android.widget.Button
@@ -62,6 +61,7 @@ class FragmentSchedule : Fragment(R.layout.fragment_schedule), OtawilmaNetworkin
 
 
         // TODO add features
+        // TODO add multiple states to handled, for with no internet it tries to cause a stackoverflow
 
         val handled : BooleanArray = BooleanArray(timeTableDayAdapter.itemCount){
             false
@@ -82,7 +82,7 @@ class FragmentSchedule : Fragment(R.layout.fragment_schedule), OtawilmaNetworkin
                         }
                     }
                 } else if (state != SchoolDay.UPDATED) {
-                    schoolDayRepository.schoolDayCachedFlow(item.date).collect {
+                    schoolDayRepository.schoolDayServerCachedFlow(item.date).collect {
                         CoroutineScope(Dispatchers.Main).launch {
                             timeTableDayAdapter.submitChange(it, i)
                         }
@@ -93,10 +93,8 @@ class FragmentSchedule : Fragment(R.layout.fragment_schedule), OtawilmaNetworkin
             }
             for (i in 0 until recyclerViewSchedule.childCount){
                 val child = recyclerViewSchedule[i]
-
                 // This took only around a fucking hour to find out
                 child.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
-                Log.d("Layout", "The Height of $i is ${child.measuredHeight}")
             }
         }
         // Set the starting position correctly

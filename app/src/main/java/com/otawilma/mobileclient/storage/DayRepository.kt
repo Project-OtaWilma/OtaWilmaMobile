@@ -55,11 +55,12 @@ class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDay
         }
     }
 
-    fun schoolDayCachedFlow(date : LocalDate) : Flow<SchoolDay> = flow {
+    fun schoolDayServerCachedFlow(date : LocalDate) : Flow<SchoolDay> = flow {
+        emit(getCached(date) ?: SchoolDay(date))
         do {
             val stored : SchoolDay? = serverCache[date]?.updated()
-            emit(stored ?: SchoolDay(date))
-            delay(10)
+            if (stored != null) emit(stored)
+            delay(100)
         } while (stored == null)
     }
 
