@@ -8,11 +8,12 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="8dp"
         android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/buttonSearchSchedule">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewFragmentSchedule"
@@ -22,5 +23,30 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/cardview_homepage_schedule_day" />
     </androidx.core.widget.NestedScrollView>
+
+    <ImageButton
+        android:id="@+id/buttonSearchSchedule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/lightBlue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_today"
+        android:minHeight="40dp"
+        android:minWidth="40dp"
+        />
+
+    <Button
+        android:id="@+id/buttonScheduleToday"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Today"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonSearchSchedule"
+        app:layout_constraintStart_toEndOf="@+id/buttonSearchSchedule"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.View.MeasureSpec
+import android.widget.Button
+import android.widget.ImageButton
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,11 +46,20 @@ class FragmentSchedule : Fragment(R.layout.fragment_schedule), OtawilmaNetworkin
 
         val recyclerViewSchedule = view.findViewById<RecyclerView>(R.id.recyclerViewFragmentSchedule)
         val linearLayoutManager = LinearLayoutManager(context)
+        val buttonCalender = view.findViewById<ImageButton>(R.id.buttonSearchSchedule)
+        val buttonToday = view.findViewById<Button>(R.id.buttonScheduleToday)
+
+        buttonToday.setOnClickListener {
+            recyclerViewSchedule.scrollToPosition(365)
+        }
+
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
         recyclerViewSchedule.apply {
             layoutManager = linearLayoutManager
             adapter = timeTableDayAdapter
         }
+
+
 
         // TODO add features
 
