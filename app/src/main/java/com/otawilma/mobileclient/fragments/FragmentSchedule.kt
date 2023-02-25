@@ -3,8 +3,8 @@ package com.otawilma.mobileclient.fragments
 import android.os.Bundle
 import android.view.View
 import android.view.View.MeasureSpec
-import android.widget.Button
-import android.widget.ImageButton
+import android.view.ViewGroup
+import android.widget.*
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -50,10 +50,6 @@ class FragmentSchedule : Fragment(R.layout.fragment_schedule), OtawilmaNetworkin
         val buttonCalender = view.findViewById<ImageButton>(R.id.buttonSearchSchedule)
         val buttonToday = view.findViewById<Button>(R.id.buttonScheduleToday)
 
-        buttonToday.setOnClickListener {
-            recyclerViewSchedule.scrollToPosition(365)
-        }
-
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
         recyclerViewSchedule.apply {
             layoutManager = linearLayoutManager
@@ -61,6 +57,7 @@ class FragmentSchedule : Fragment(R.layout.fragment_schedule), OtawilmaNetworkin
         }
 
         // TODO add features
+        // TODO make this work with no internet in a more memoryEfficient way
 
         val handled : Array<Int> = Array(timeTableDayAdapter.itemCount){0}
         val layoutManager = (recyclerViewSchedule.layoutManager as LinearLayoutManager)
@@ -70,7 +67,7 @@ class FragmentSchedule : Fragment(R.layout.fragment_schedule), OtawilmaNetworkin
                 CoroutineScope(Dispatchers.IO).launch {
 
                     // If a request for the week in question has not been made yet
-                    val item = timeTableDayAdapter.getItemAtPosition(i) as SchoolDay
+                    val item = timeTableDayAdapter[i] as SchoolDay
                     val state = item.state
                     if (state != SchoolDay.UPDATED && handled[i] == NOT_HANDLED) {
                         setHandledWeek(item.date, i, handled, REQUEST_MADE)
@@ -102,7 +99,39 @@ class FragmentSchedule : Fragment(R.layout.fragment_schedule), OtawilmaNetworkin
             recyclerViewSchedule.minimumHeight = max
         }
         // Set the starting position correctly
-        layoutManager.scrollToPosition(365)
+        layoutManager.scrollToPositionWithOffset(365,0)
+
+        buttonToday.setOnClickListener {
+            layoutManager.scrollToPositionWithOffset(365,0)
+        }
+
+        buttonCalender.setOnClickListener {
+            val popUpView = layoutInflater.inflate(R.layout.popup_calender_seek, null)
+            val popupWindow = PopupWindow(
+                popUpView,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            val calender = popUpView.findViewById<CalendarView>(R.id.calendarViewPopupSeek)
+            calender.date = (timeTableDayAdapter[layoutManager.findFirstVisibleItemPosition()] as SchoolDay).date.toEpochDay() * 86400000
+            calender.setOnDateChangeListener { _, year, month, dayOfMonth ->
+                val pos = timeTableDayAdapter.getPositionOfADate(LocalDate.of(year, month + 1, dayOfMonth))
+                if (pos == -1) {
+                    Toast.makeText(
+                        context,
+                        "Schedule for the selected date does not exist",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnDateChangeListener
+                }
+                layoutManager.scrollToPositionWithOffset(pos,0)
+                popupWindow.dismiss()
+            }
+
+            val buttonCancel = popUpView.findViewById<Button>(R.id.buttonDismissCalender)
+            buttonCancel.setOnClickListener { popupWindow.dismiss() }
+            popupWindow.showAsDropDown(buttonCalender,0 , -buttonCalender.measuredHeight)
+        }
     }
 
     private fun setHandledWeek(date: LocalDate, index : Int, handled : Array<Int>, state : Int){

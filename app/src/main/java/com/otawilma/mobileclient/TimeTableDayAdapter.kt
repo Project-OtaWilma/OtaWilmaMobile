@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.otawilma.mobileclient.dataClasses.DayItem
 import com.otawilma.mobileclient.dataClasses.SchoolDay
 import com.otawilma.mobileclient.dataClasses.Separator
+import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
 
@@ -35,7 +36,11 @@ class TimeTableDayAdapter: RecyclerView.Adapter<TimeTableDayAdapter.TimeTableDay
         }
     }
 
-    fun getItemAtPosition (position: Int) = items[position]
+    operator fun get (position: Int) = items[position]
+
+    fun getPositionOfADate (date: LocalDate) = items.indexOfFirst {
+        it is SchoolDay && it.date == date
+    }
 
     fun submitItems(list: List<SchoolDay>){
 
