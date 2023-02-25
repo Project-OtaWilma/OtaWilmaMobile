@@ -46,10 +46,11 @@ class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDay
         }
         serverCache.clear()
         emit(listActual)
+        return@flow
     }
 
     fun schoolDayFlow(date : LocalDate) : Flow<SchoolDay> = flow {
-        emit(getCached(date) ?: SchoolDay(date, listOf(), SchoolDay.NO_INFO))
+        emit(getCached(date) ?: SchoolDay(date))
         repeatUntilSuccess(context, waitUntilToken(context)){
             emit(getFromServer(it, date)?: SchoolDay(date))
         }
@@ -57,11 +58,14 @@ class DayRepository(private val context: Context): OtawilmaNetworking, SchoolDay
 
     fun schoolDayServerCachedFlow(date : LocalDate) : Flow<SchoolDay> = flow {
         emit(getCached(date) ?: SchoolDay(date))
-        do {
+        while (true) {
             val stored : SchoolDay? = serverCache[date]?.updated()
-            if (stored != null) emit(stored)
+            if (stored != null) {
+                emit(stored)
+                break
+            }
             delay(100)
-        } while (stored == null)
+        }
     }
 
     private fun getCached(day : LocalDate) : SchoolDay? {
