@@ -57,7 +57,7 @@ class FragmentSchedule : Fragment(R.layout.fragment_schedule), OtawilmaNetworkin
         }
 
         // TODO add features
-        // TODO make this work with no internet in a more memoryEfficient way
+        // TODO make this work with no internet in a more CPU efficient way
 
         val handled : Array<Int> = Array(timeTableDayAdapter.itemCount){0}
         val layoutManager = (recyclerViewSchedule.layoutManager as LinearLayoutManager)
