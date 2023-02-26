@@ -19,7 +19,9 @@
         <service
             android:name=".messaging.MessageWatcher"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE">
+        </service>
 
         <receiver
             android:name=".AutoStart"
