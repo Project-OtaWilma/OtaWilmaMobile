@@ -79,7 +79,11 @@ interface OtawilmaNetworking : LessonParser, MessageParser {
             catch (e: Exception){
                 when(e){
                     is NoStoredTokenException -> return handleInvalidToken(context)
-                    is OtaWilmaDownException, is WilmaDownException, is SocketTimeoutException-> delay(100)
+                    is OtaWilmaDownException, is WilmaDownException, is SocketTimeoutException -> delay(100)
+                    is RateLimitException -> {
+                        CoroutineScope(Dispatchers.Main).launch { Toast.makeText(context, "Rate limit Exceeded", Toast.LENGTH_SHORT).show() }
+                        delay(5000)
+                    }
                     else -> throw e
                 }
             }
