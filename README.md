@@ -1,3 +1,7 @@
+# THIS PROJECT IS NOW ABANDONED
+
+The developer no longer needs to use wilma, feel free to fork the project if you want to do something with the code.
+
 # OtaWilmaMobile
 
 OtaWilmaMobile is an android interface for OtaWilma. 
